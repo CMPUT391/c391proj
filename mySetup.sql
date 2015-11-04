@@ -24,4 +24,4 @@ insert into subscriptions values (3, 4);
 insert into subscriptions values (1, 3);
 insert into subscriptions values (2, 3);
 
-
+commit;

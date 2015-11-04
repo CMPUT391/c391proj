@@ -99,6 +99,131 @@
 		}
 
 
+		// REMOVE PERSON
+		if(isset($_POST['removePersonBtn'])){
+			$personID = $_POST['person_id'];
+
+			// Check if sensorID is in the database
+			$sql = 'SELECT * FROM persons WHERE person_id='.$personID.'';
+			echo 'SELECT * FROM persons WHERE person_id='.$personID.'<br>';
+
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+			if (empty($results)) {
+				echo 'PersonID : '.$personID.' does not exist in the database. <br/>';
+				return;
+			}
+
+			// Check if person has any subscriptons & delete those rows
+			$sql = 'SELECT * FROM subscriptions WHERE person_id='.$personID.'';
+			echo 'SELECT * FROM subscriptions WHERE person_id='.$personID.'<br>';
+
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+			if (!empty($results)) {
+				$sql = 'DELETE FROM subscriptions WHERE ( person_id = '.(int)$personID.')';
+
+				echo $sql;
+				echo '<br>';
+
+				//Prepare sql using conn and returns the statement identifier
+				$stid = oci_parse($conn, $sql);
+
+				//Execute a statement returned from oci_parse()
+				$res=oci_execute($stid);
+
+				//if error, retrieve the error using the oci_error() function & output an error message
+				if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+				}
+				else{
+				echo 'Subscriptions for person #'.$personID.' deleted <br/>';
+				}
+			}
+
+
+			// Check if person has any associated users & delete those rows
+			$sql = 'SELECT * FROM users WHERE person_id='.$personID.'';
+			echo 'SELECT * FROM users WHERE person_id='.$personID.'<br>';
+
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+			if (!empty($results)) {
+				$sql = 'DELETE FROM users WHERE ( person_id = '.(int)$personID.')';
+
+				echo $sql;
+				echo '<br>';
+
+				//Prepare sql using conn and returns the statement identifier
+				$stid = oci_parse($conn, $sql);
+
+				//Execute a statement returned from oci_parse()
+				$res=oci_execute($stid);
+
+				//if error, retrieve the error using the oci_error() function & output an error message
+				if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+				}
+				else{
+				echo 'Users associated with person #'.$personID.' deleted <br/>';
+				}
+			}
+
+
+			$sql = 'DELETE FROM persons WHERE ( person_id = '.(int)$personID.')';
+
+			echo $sql;
+			echo '<br>';
+
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+			$err = oci_error($stid); 
+			echo htmlentities($err['message']);
+			}
+			else{
+			echo 'Person deleted <br/>';
+			}
+
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+		}
+
+
 		// CREATE / ADD SENSOR
 		if(isset($_POST['createSensorBtn'])){        	
 			$location=$_POST['sensor_location'];            		
