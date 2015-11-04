@@ -15,9 +15,8 @@
 		} else if ($_SESSION['status'] == 'a'){
 			echo "Welcome Admin";
 		?>
-		<a href ='LoginModule.html'>
+		<a href ='LogoutModule.php'>
 			<button>Logout</button>
-			<?php session_destroy(); session_commit(); ?>
 		</a> 
 	
 		<a href="sensorUserManagementPage.html">
@@ -31,10 +30,9 @@
 		<?php
 		} else if ($_SESSION['status'] == 's') {
 			echo "Welcome Scientist";
-				?>
-		<a href ='LoginModule.html'>
+		?>
+		<a href ='LogoutModule.php'>
 			<button>Logout</button>
-			<?php session_destroy(); session_commit();?>
 		</a>
 	
 		<a href="sensorUserManagementPage.html">
@@ -49,9 +47,8 @@
 		} else {
 			echo "Welcome Data Curator";
 		?>
-		<a href ='LoginModule.html'>
+		<a href ='LogoutModule.php'>
 			<button>Logout</button>
-			<?php session_destroy(); session_commit();?>
 		</a>
 	
 		<a href="sensorUserManagementPage.html">
