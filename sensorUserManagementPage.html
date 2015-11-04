@@ -1,0 +1,134 @@
+<html>
+
+<head>
+<title>Sensor Mangagement</title>
+</head>
+
+<body>
+<h1> User Management </h1>
+
+<fieldset style="width:50%;"> 
+	<legend style="text-align: center;"> <strong> Person </strong> </legend>
+
+	<form name="addNewPerson" method="post" action="sensorUserModule.php">
+		<fieldset>
+			<legend style="text-align: center;"> <b>Add New Person</b> </legend>
+			First Name : <input type='text' name='first_name'><br>
+			Last Name : <input type='text' name='last_name'><br>
+			Address : <input type='text' name='address'><br>
+			Email : <input type='text' name='email'><br>
+			Phone Number : <input type='text' name='phone_number'><br>
+			<button type='submit' name='addNewPersonBtn'>Add New Person</button>
+		</fieldset>
+	</form>
+
+	<br><br>
+
+	<form name="updatePerson" method="post" action="sensorUserModule.php">
+		<fieldset>
+			<legend style="text-align: center;"> <b>Update Person</b> </legend>
+			PersonID : <input type='number' name="person_id"><br><br><br>
+			First Name : <input type='text' name='first_name'><br>
+			Last Name : <input type='text' name='last_name'><br>
+			Address : <input type='text' name='address'><br>
+			Email : <input type='text' name='email'><br>
+			Phone Number : <input type='text' name='phone_number'><br>
+			<button type='submit' name='updatePersonBtn'>Update Person</button>
+		</fieldset>
+	</form>
+
+</fieldset>
+
+
+<br><br><br>
+
+
+<fieldset style="width:50%;"> 
+	<legend style="text-align: center;"> <strong> Sensors </strong> </legend>
+
+	<form name="createSensor" method="post" action="sensorUserModule.php">
+		<fieldset>
+			<legend style="text-align: center;"> <b>Create Sensor</b> </legend>
+			Location : <input type='text' name='sensor_location'> <br>
+			Type: <select name='sensor_type'>
+					<option disabled selected> --- Select a type --- </option>
+					<option value="a">Audio (a) </option>
+					<option value="i">Image (i) </option>
+					<option value="t">Temperature (t) </option>
+					<option value="o">Other(o) </option>
+				</select> <br>
+			Description: <input type='text' name='sensor_description'> <br>
+			<button type='submit' name='createSensorBtn'>Add Sensor</button>
+		</fieldset>
+	</form>
+
+	<br><br>
+
+	<form name="removeSensor" method="post" action="sensorUserModule.php">
+		<fieldset>
+			<legend style="text-align: center;"><b> Remove Sensor </b></legend>
+			Sensor ID : <input type='text' name='sensor_id'> <br>
+			<button type='submit' name='removeSensorBtn'>Remove</button>
+		</fieldset>
+	</form>
+
+
+</fieldset>
+
+
+<br><br>
+
+<fieldset style="width:50%;"> 
+	<legend style="text-align: center;"> <strong> Users </strong> </legend>
+
+	<form name="createUser" method="post" action="sensorUserModule.php">
+		<fieldset>
+			<legend><b> Create User Account </b></legend>
+			Username : <input type='text' name='username'> <br>
+			Password : <input type='password' name='password'> <br>
+			Role : <select name='role'>
+					<option disabled selected> --- Select a role --- </option>
+					<option value="a">Admin (a) </option>
+					<option value="d">Data Curator (d) </option>
+					<option value="s">Scientist (s) </option>
+				</select> <br>
+			Person_ID : <input type='text' name='person_id'> <br>
+			Date Registered : <input type='date' name='date_registered'> <br> <!-- is this supposed to be a hidden field? -->
+			<button type='submit' name='createUserBtn'>Create User</button>
+		</fieldset>
+	</form>
+
+
+	<br><br>
+
+	<form name="removeUser" method="post" action="sensorUserModule.php">
+		<fieldset>
+			<legend> <b> Remove User Account </b></legend>
+			Username : <input type='text' name='username'> <br>
+			<button type='submit' name='removeUserBtn'>Remove</button>
+		</fieldset>
+	</form>
+
+	<br><br>
+
+	<form name="updateUser" method="post" action="sensorUserModule.php">
+		<fieldset>
+			<legend><b>Update User Account </b></legend>
+			Username : <input type='text' name='username'> <br><br><br>
+
+			Password : <input type='password' name='password'> <br>
+			Role : <select name='role'>
+					<option disabled selected> --- Select a role --- </option>
+					<option value="a">Admin (a) </option>
+					<option value="d">Data Curator (d) </option>
+					<option value="s">Scientist (s) </option>
+				</select> <br>
+			Person_ID : <input type='text' name='person_id'> <br>
+			Date Registered : <input type='date' name='date_registered'> <br> <!-- is this supposed to be a hidden field? -->
+			<button type='submit' name='updateUserBtn'>update User</button>
+		</fieldset>
+	</form>
+
+</body>
+
+</html>
