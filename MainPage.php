@@ -24,7 +24,7 @@
 			<button>Go to Sensor & User Management module</button>
 		</a>
 
-		<a href="subscribe.php">
+		<a href="subscribeModule.php">
 			<button>Go to subscribe module</button>
 		</a>
 
@@ -41,7 +41,7 @@
 			<button>Go to Sensor & User Management module</button>
 		</a>
 
-		<a href="subscribe.php">
+		<a href="subscribeModule.php">
 			<button>Go to subscribe module</button>
 		</a>
 
@@ -58,7 +58,7 @@
 			<button>Go to Sensor & User Management module</button>
 		</a>
 
-		<a href="subscribe.php">
+		<a href="subscribeModule.php">
 			<button>Go to subscribe module</button>
 		</a>
 

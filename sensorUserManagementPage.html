@@ -5,6 +5,8 @@
 </head>
 
 <body>
+	<button name='homeBtn'> <a href="MainPage.php"> Home </a></button>
+
 <h1> User Management </h1>
 
 <fieldset style="width:50%;"> 
@@ -36,6 +38,17 @@
 			<button type='submit' name='updatePersonBtn'>Update Person</button>
 		</fieldset>
 	</form>
+
+	<br><br>
+
+	<form name="removePerson" method="post" action="sensorUserModule.php">
+		<fieldset>
+			<legend style="text-align: center;"><b> Remove Person </b></legend>
+			Person ID : <input type='text' name='person_id'> <br>
+			<button type='submit' name='removePersonBtn'>Remove</button>
+		</fieldset>
+	</form>
+
 
 </fieldset>
 
