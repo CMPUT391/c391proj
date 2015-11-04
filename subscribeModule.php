@@ -138,30 +138,36 @@
             $rows = get_sensors($conn);
             if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $submit = $_POST['sensors'];
-                
+                echo "Subscribed to selected sensors";
                 $i = 0;                
-                
-                foreach($rows as $row){
-                    if(in_array($row['SENSOR_ID'],$submit)){
-                        add_subscription($conn,$row['SENSOR_ID'],$pid);
-                    } else {
-                        remove_subscription($conn,$row['SENSOR_ID'],$pid);
+                if (!empty($submit)){
+                    foreach($rows as $row){
+                        if(in_array($row['SENSOR_ID'],$submit)){
+                            add_subscription($conn,$row['SENSOR_ID'],$pid);
+                        } else {
+                            remove_subscription($conn,$row['SENSOR_ID'],$pid);
+                        }
+                        $i++;
                     }
-                    $i++;
                 }
             }
     
             
-            
+            echo "<table border='1'>";
+            echo "<tr><td>Subscribed</td><td>SENSOR_ID</td><td>LOCATION</td></tr>";
             foreach($rows as $row){
                 if(is_subscribed($conn,$row['SENSOR_ID'],$pid)){
-                    echo "<input type='checkbox' name='sensors[]' value='".$row['SENSOR_ID']."' checked>".$row['SENSOR_ID'].' '.$row['LOCATION'].'<br>';
+                    echo "<tr><td><input type='checkbox' name='sensors[]' value='".$row['SENSOR_ID']."' checked></td>";
+                    echo "<td>".$row['SENSOR_ID']."</td>";
+                    echo "<td>".$row['LOCATION']."</td></tr>";
                 } else {
-                    echo "<input type='checkbox' name='sensors[]' value='".$row['SENSOR_ID']."'>".$row['SENSOR_ID'].' '.$row['LOCATION'].'<br>';
+                    echo "<tr><td><input type='checkbox' name='sensors[]' value='".$row['SENSOR_ID']."'></td><td>".$row['SENSOR_ID'].'</td><td>'.$row['LOCATION'].'</td></tr>';
                 }
             }
+            echo "</table>";
             oci_close($conn);
-            echo "<input type='submit' name='submit' value='submit'></form>";
+            echo "<input type='submit' name='submit' value='submit'>";
+            echo "</form>";
 	
 	    ?>
     </body>
