@@ -61,6 +61,7 @@ include("PHPconnectionDB.php");
 					session_start();
 					$_SESSION['status'] = $status;
 					$_SESSION['personid'] = $personid;
+					session_commit();
 					echo '<br /><a href="MainPage.php">MainPage</a>';
 					// Free the statement identifier when closing the connection
 					oci_free_statement($stid);
