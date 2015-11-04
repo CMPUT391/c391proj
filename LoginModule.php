@@ -7,6 +7,11 @@ include("PHPconnectionDB.php");
 
 	if (empty($_POST['username']) || empty($_POST['password'])) {
 		echo "Missing some fields, please retry.";
+		?>
+		<a href ='LoginModule.html'>
+			<button>Retry</button>
+		</a>
+	<?php
 	}
 	else{
 		if (isset ($_POST['validate'])){ 
@@ -40,24 +45,22 @@ include("PHPconnectionDB.php");
 					echo "Successful Login";
 					# get the type of user
 					$status = NULL;
+					$personid = NULL;
 					$count = 0;
 					
 					foreach ($row as $item) {
-						//echo " item is ";
-						//echo $item;
-						//echo " count is ";
-						//echo $count;
 						$count++;
 						if (($item == 'a' || $item == 's' || $item == 'd') && ($count==3)) {
 							$status = $item;
-							//echo "status is ";
-							//echo $status;
-						}	
+						} else if ($count == 4) {
+							$personid = $item;
+						}
 					}
 					echo '<br/>';
 					
 					session_start();
 					$_SESSION['status'] = $status;
+					$_SESSION['personid'] = $personid;
 					echo '<br /><a href="MainPage.php">MainPage</a>';
 					// Free the statement identifier when closing the connection
 					oci_free_statement($stid);
@@ -67,8 +70,13 @@ include("PHPconnectionDB.php");
 					echo "Unsuccessful Login";
 					// Free the statement identifier when closing the connection
 					oci_free_statement($stid);
-					oci_close($conn);				
-					header('Location: LoginModule.html');
+					oci_close($conn);	
+					?>
+					<a href ='LoginModule.html'>
+						<button>Retry</button>
+					</a>
+					<?php		
+					// header('Location: LoginModule.html');
 				}
 			}
 		}
