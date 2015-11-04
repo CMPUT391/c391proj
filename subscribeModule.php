@@ -133,22 +133,20 @@
             $conn=connect();
             echo "<form name='submit1' method='POST' action='subscribeModule.php'>";
             $pid = 1; //grab it from jimmy's stuff
-           	               
            	              
+           	                
             $rows = get_sensors($conn);
             if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $submit = $_POST['sensors'];
                 echo "Subscribed to selected sensors";
                 $i = 0;                
-                if (!empty($submit)){
-                    foreach($rows as $row){
-                        if(in_array($row['SENSOR_ID'],$submit)){
-                            add_subscription($conn,$row['SENSOR_ID'],$pid);
-                        } else {
-                            remove_subscription($conn,$row['SENSOR_ID'],$pid);
-                        }
-                        $i++;
+                foreach($rows as $row){
+                    if(!empty($submit) and in_array($row['SENSOR_ID'],$submit)){
+                        add_subscription($conn,$row['SENSOR_ID'],$pid);
+                    } else {
+                        remove_subscription($conn,$row['SENSOR_ID'],$pid);
                     }
+                    $i++;
                 }
             }
     
