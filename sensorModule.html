@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<title>Sensor Mangagement</title>
+</head>
+
+<body>
+	<button name='homeBtn'> <a href="MainPage.php"> Home </a></button>
+
+	<h1> Sensors Module </h1>
+
+	<fieldset style="width:50%;"> 
+		<legend style="text-align: center;"> <strong> Sensors </strong> </legend>
+
+		<form name="createSensor" method="post" action="sensorModule.php">
+			<fieldset>
+				<legend style="text-align: center;"> <b>Create Sensor</b> </legend>
+				Location : <input type='text' name='sensor_location'> <br>
+				Type: <select name='sensor_type'>
+						<option disabled selected> --- Select a type --- </option>
+						<option value="a">Audio (a) </option>
+						<option value="i">Image (i) </option>
+						<option value="t">Temperature (t) </option>
+						<option value="o">Other(o) </option>
+					</select> <br>
+				Description: <input type='text' name='sensor_description'> <br>
+				<button type='submit' name='createSensorBtn'>Add Sensor</button>
+			</fieldset>
+		</form>
+
+		<br><br>
+
+		<form name="removeSensor" method="post" action="sensorModule.php">
+			<fieldset>
+				<legend style="text-align: center;"><b> Remove Sensor </b></legend>
+				Sensor ID : <input type='text' name='sensor_id'> <br>
+				<button type='submit' name='removeSensorBtn'>Remove</button>
+			</fieldset>
+		</form>
+
+
+	</fieldset>
+
+</body>
+
+</html>

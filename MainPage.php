@@ -19,8 +19,12 @@
 			<button>Logout</button>
 		</a> 
 	
-		<a href="sensorUserManagementPage.html">
-			<button>Go to Sensor & User Management module</button>
+		<a href="sensorModule.html">
+			<button>Go to Sensor module</button>
+		</a>
+
+		<a href="userModule.html">
+			<button>Go to User module</button>
 		</a>
 
 		<a href="subscribeModule.php">
@@ -35,10 +39,14 @@
 			<button>Logout</button>
 		</a>
 	
-		<a href="sensorUserManagementPage.html">
-			<button>Go to Sensor & User Management module</button>
+		<a href="sensorModule.html">
+			<button>Go to Sensor module</button>
 		</a>
 
+		<a href="userModule.html">
+			<button>Go to User module</button>
+		</a>
+		
 		<a href="subscribeModule.php">
 			<button>Go to subscribe module</button>
 		</a>
@@ -51,8 +59,12 @@
 			<button>Logout</button>
 		</a>
 	
-		<a href="sensorUserManagementPage.html">
-			<button>Go to Sensor & User Management module</button>
+		<a href="sensorModule.html">
+			<button>Go to Sensor module</button>
+		</a>
+
+		<a href="userModule.html">
+			<button>Go to User module</button>
 		</a>
 
 		<a href="subscribeModule.php">

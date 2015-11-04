@@ -15,9 +15,6 @@
 			$email = $_POST['email'];
 			$phone_number = $_POST['phone_number'];
 
-			// generatePersonID($conn); - NOTE: Must drop sequence then initiate / create sequence once at beginning ex when populate db with admin user.
-
-			//$sql = 'INSERT INTO sensors VALUES ('.(int)$personID.', \''.$location.'\', \''.$type.'\', \''.$description.'\')';
 			$sql = 'INSERT INTO persons VALUES (person_id.nextval, \''.$first_name.'\', \''.$last_name.'\', \''.$address.'\', \''.$email.'\', \''.$phone_number.'\')';
 
 			echo $sql;
@@ -223,94 +220,6 @@
 			oci_free_statement($stid);
 		}
 
-
-		// CREATE / ADD SENSOR
-		if(isset($_POST['createSensorBtn'])){        	
-			$location=$_POST['sensor_location'];            		
-			$type=$_POST['sensor_type'];
-			$description = $_POST['sensor_description'];
-
-			//generateSensorID($conn); //- NOTE: Must drop sequence then initiate / create sequence once at beginning ex when populate db with admin user.
-
-			$sql = 'INSERT INTO sensors VALUES ( sensor_id.nextval, \''.$location.'\', \''.$type.'\', \''.$description.'\')';
-
-			echo $sql;
-			echo '<br>';
-
-			//Prepare sql using conn and returns the statement identifier
-			$stid = oci_parse($conn, $sql);
-
-			//Execute a statement returned from oci_parse()
-			$res = oci_execute($stid);
-
-			//if error, retrieve the error using the oci_error() function & output an error message
-			if (!$res) {
-			$err = oci_error($stid); 
-			echo htmlentities($err['message']);
-			}
-			else{
-				echo 'Row inserted <br/>';
-				echo 'Sensor Location: '.$location.'.<br/> Sensor Type: '.$type.'.<br/>Sensor Description: '.$description.'. <br/><br/>';
-			}
-
-			// Free the statement identifier when closing the connection
-			oci_free_statement($stid);
-
-		}
-
-
-
-
-		// REMOVE SENSORS
-		if(isset($_POST['removeSensorBtn'])){
-			$sensorID = $_POST['sensor_id'];
-
-			// Check if sensorID is in the database
-			$sql = 'SELECT * FROM sensors WHERE sensor_id='.$sensorID.'';
-			echo 'SELECT * FROM sensors WHERE sensor_id='.$sensorID.'<br>';
-
-			//Prepare sql using conn and returns the statement identifier
-			$stid = oci_parse($conn, $sql);
-			//Execute a statement returned from oci_parse()
-			$res=oci_execute($stid);
-			//if error, retrieve the error using the oci_error() function & output an error message
-			if (!$res) {
-				$err = oci_error($stid); 
-				echo htmlentities($err['message']);
-			}
-
-			$results = oci_fetch_array($stid, OCI_ASSOC);
-			if (empty($results)) {
-				echo 'SensorID : '.$sensorID.' does not exist in the database. <br/>';
-				return;
-			}
-
-
-			$sql = 'DELETE FROM sensors WHERE ( sensor_id = '.(int)$sensorID.')';
-
-			echo $sql;
-			echo '<br>';
-
-			//Prepare sql using conn and returns the statement identifier
-			$stid = oci_parse($conn, $sql);
-
-			//Execute a statement returned from oci_parse()
-			$res=oci_execute($stid);
-
-			//if error, retrieve the error using the oci_error() function & output an error message
-			if (!$res) {
-			$err = oci_error($stid); 
-			echo htmlentities($err['message']);
-			}
-			else{
-			echo 'Row deleted <br/>';
-			}
-
-			// Free the statement identifier when closing the connection
-			oci_free_statement($stid);
-		}
-
-
 		// ADD / CREATE USER
 		if(isset($_POST['createUserBtn'])){        	
 			$username = $_POST['username'];
@@ -319,9 +228,6 @@
 			$person_id = $_POST['person_id'];
 			$date_registered = $_POST['date_registered'];
 
-			// Checks
-			// --- QUESTON : Can sensor type, location & description be empty/blank since it's not a key? --- //
-			// Empty fields check
 			if (empty($username)) {
 				echo 'Username cannot be blank. A username must be selected.';
 				return;
@@ -334,6 +240,7 @@
 				echo 'Person ID cannot be blank. A person ID must be entered.';
 				return;
 			}
+
 			// Check if username is already in the database
 			$sql = 'SELECT * FROM users WHERE user_name=\''.$username.'\'';
 			echo 'SELECT * FROM users WHERE user_name=\''.$username.'\' <br>';
@@ -354,24 +261,33 @@
 				return;
 			}
 
+			// Check if a valid/existing person_id was entered
+			$sql = 'SELECT * FROM persons WHERE person_id=\''.$person_id.'\'';
+			echo 'SELECT * FROM persons WHERE person_id=\''.$person_id.'\' <br>';
+
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+			if (empty($results)) {
+				echo 'PersonID: '.$personID.' is not in the database. Invalid. <br/>';
+				return;
+			}
+			
 
 			$date = date('Y-m-d H:i:s',time());;
-			echo '<br><br><br>';
-			echo $date;
-			echo '<br><br><br>';
-
-
-			// http://stackoverflow.com/questions/25519309/inserting-date-into-oracle-database-from-php
-			$delivDate = date('d-m-Y h:i:s', strtotime($_POST['date_registered']));    
-
-			echo 'Thank You !<br/> The username is '.$username.'.<br/> The password is '.$password.'.<br/> The role is '.$role.'. <br/>The person_id is '.$person_id.'.<br/> The date registered is '.$date_registered.'. <br/>';
-			$sql = 'INSERT INTO users VALUES (\''.$username.'\', \''.$password.'\', \''.$role.'\', '.(int)$person_id.', NULL)';
-			
-			//$sql = 'INSERT INTO users VALUES (\''.$username.'\', \''.$password.'\', \''.$role.'\', '.(int)$person_id.', to_date(\''.$date.'\', "yy-mm-dd hh24:mi:ss"))';
-
-			//echo 'INSERT INTO users VALUES (\''.$username.'\', \''.$password.'\', \''.$role.'\', '.(int)$person_id.', to_date(\''.$delivDate.'\', "dd-mm-yy hh24:mi:ss"))';
-
+			echo 'Username: '.$username.'<br/>Password: '.$password.'<br/>Role: '.$role.'<br/>PersonID: '.$person_id.'<br/>';
+			$sql = 'INSERT INTO users VALUES (\''.$username.'\', \''.$password.'\', \''.$role.'\', '.(int)$person_id.', to_date(\''.$date.'\', \'yy-mm-dd hh24:mi:ss\'))';
 			echo $sql;
+			echo '<br>';
+
 			//Prepare sql using conn and returns the statement identifier
 			$stid = oci_parse($conn, $sql);
 			//Execute a statement returned from oci_parse()
@@ -391,9 +307,7 @@
 		// REMOVE USER
 		if(isset($_POST['removeUserBtn'])){
 			$username = $_POST['username'];
-			// Checks
-			// --- QUESTON : Can sensor type, location & description be empty/blank since it's not a key? --- //
-			// Empty fields check
+
 			if (empty($username)) {
 				echo 'Username cannot be blank. A username must be selected.';
 				return;
@@ -419,10 +333,9 @@
 				return;
 			}
 
-			echo '<br/> The username is '.$username.' <br/><br/>';
+			echo '<br/>Username: '.$username.' <br/><br/>';
 
 			$sql = 'DELETE FROM users WHERE ( user_name =\''.$username.'\')';
-
 			echo 'DELETE FROM users WHERE ( user_name =\''.$username.'\') <br>';
 
 			//Prepare sql using conn and returns the statement identifier
@@ -437,7 +350,7 @@
 			echo htmlentities($err['message']);
 			}
 			else{
-			echo 'Row deleted <br/>';
+			echo 'User deleted <br/>';
 			}
 
 			// Free the statement identifier when closing the connection
@@ -451,9 +364,6 @@
 			$password = $_POST['password'];
 			$role = $_POST['role'];
 
-
-			// Checks
-			// Empty fields check
 			if (empty($username)) {
 				echo 'Username cannot be blank. A username must be selected.';
 				return;
@@ -491,6 +401,8 @@
 			if (!$res) {
 				$err = oci_error($stid); 
 				echo htmlentities($err['message']);
+			} else {
+				echo 'User updated! <br>';
 			}
 
 			// Free the statement identifier when closing the connection
@@ -502,7 +414,7 @@
 	
 		?>
 
-		<button><a href="sensorUserManagementPage.html"> Go Back </a></button>
+		<button><a href="userModule.html"> Go Back </a></button>
 
     </body>
 </html>

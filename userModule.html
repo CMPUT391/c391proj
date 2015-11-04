@@ -1,7 +1,7 @@
 <html>
 
 <head>
-<title>Sensor Mangagement</title>
+<title>User Mangagement</title>
 </head>
 
 <body>
@@ -12,7 +12,7 @@
 <fieldset style="width:50%;"> 
 	<legend style="text-align: center;"> <strong> Person </strong> </legend>
 
-	<form name="addNewPerson" method="post" action="sensorUserModule.php">
+	<form name="addNewPerson" method="post" action="userModule.php">
 		<fieldset>
 			<legend style="text-align: center;"> <b>Add New Person</b> </legend>
 			First Name : <input type='text' name='first_name'><br>
@@ -26,7 +26,7 @@
 
 	<br><br>
 
-	<form name="updatePerson" method="post" action="sensorUserModule.php">
+	<form name="updatePerson" method="post" action="userModule.php">
 		<fieldset>
 			<legend style="text-align: center;"> <b>Update Person</b> </legend>
 			PersonID : <input type='number' name="person_id"><br><br><br>
@@ -41,7 +41,7 @@
 
 	<br><br>
 
-	<form name="removePerson" method="post" action="sensorUserModule.php">
+	<form name="removePerson" method="post" action="userModule.php">
 		<fieldset>
 			<legend style="text-align: center;"><b> Remove Person </b></legend>
 			Person ID : <input type='text' name='person_id'> <br>
@@ -52,49 +52,12 @@
 
 </fieldset>
 
-
-<br><br><br>
-
-
-<fieldset style="width:50%;"> 
-	<legend style="text-align: center;"> <strong> Sensors </strong> </legend>
-
-	<form name="createSensor" method="post" action="sensorUserModule.php">
-		<fieldset>
-			<legend style="text-align: center;"> <b>Create Sensor</b> </legend>
-			Location : <input type='text' name='sensor_location'> <br>
-			Type: <select name='sensor_type'>
-					<option disabled selected> --- Select a type --- </option>
-					<option value="a">Audio (a) </option>
-					<option value="i">Image (i) </option>
-					<option value="t">Temperature (t) </option>
-					<option value="o">Other(o) </option>
-				</select> <br>
-			Description: <input type='text' name='sensor_description'> <br>
-			<button type='submit' name='createSensorBtn'>Add Sensor</button>
-		</fieldset>
-	</form>
-
-	<br><br>
-
-	<form name="removeSensor" method="post" action="sensorUserModule.php">
-		<fieldset>
-			<legend style="text-align: center;"><b> Remove Sensor </b></legend>
-			Sensor ID : <input type='text' name='sensor_id'> <br>
-			<button type='submit' name='removeSensorBtn'>Remove</button>
-		</fieldset>
-	</form>
-
-
-</fieldset>
-
-
 <br><br>
 
 <fieldset style="width:50%;"> 
 	<legend style="text-align: center;"> <strong> Users </strong> </legend>
 
-	<form name="createUser" method="post" action="sensorUserModule.php">
+	<form name="createUser" method="post" action="userModule.php">
 		<fieldset>
 			<legend><b> Create User Account </b></legend>
 			Username : <input type='text' name='username'> <br>
@@ -106,7 +69,6 @@
 					<option value="s">Scientist (s) </option>
 				</select> <br>
 			Person_ID : <input type='text' name='person_id'> <br>
-			Date Registered : <input type='date' name='date_registered'> <br> <!-- is this supposed to be a hidden field? -->
 			<button type='submit' name='createUserBtn'>Create User</button>
 		</fieldset>
 	</form>
@@ -114,7 +76,7 @@
 
 	<br><br>
 
-	<form name="removeUser" method="post" action="sensorUserModule.php">
+	<form name="removeUser" method="post" action="userModule.php">
 		<fieldset>
 			<legend> <b> Remove User Account </b></legend>
 			Username : <input type='text' name='username'> <br>
@@ -124,7 +86,7 @@
 
 	<br><br>
 
-	<form name="updateUser" method="post" action="sensorUserModule.php">
+	<form name="updateUser" method="post" action="userModule.php">
 		<fieldset>
 			<legend><b>Update User Account </b></legend>
 			Username : <input type='text' name='username'> <br><br><br>
@@ -137,7 +99,6 @@
 					<option value="s">Scientist (s) </option>
 				</select> <br>
 			Person_ID : <input type='text' name='person_id'> <br>
-			Date Registered : <input type='date' name='date_registered'> <br> <!-- is this supposed to be a hidden field? -->
 			<button type='submit' name='updateUserBtn'>update User</button>
 		</fieldset>
 	</form>
