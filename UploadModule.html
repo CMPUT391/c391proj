@@ -1,0 +1,64 @@
+<!-- Data curators choose what they want to upload to the server-->
+<html>
+
+<head>
+<title>Upload</title>
+</head>
+
+<body>
+	<button name='homeBtn'> <a href="MainPage.php"> Home </a></button>
+
+<!-- http://www.w3schools.com/php/php_file_upload.asp -->
+<h1> Upload </h1> 
+
+<fieldset style="width:50%;"> 
+	<legend style="text-align: center;"> <strong> Image </strong> </legend>
+
+	<form action="Image.php" method="post" enctype="multipart/form-data">
+		<fieldset>
+			<legend style="text-align: center;"> <b>Add New Image</b> </legend>
+		    	Select image to upload: <input type="file" name="imageToUpload" id="imageToUpload"><br>
+		    	Description : <input type='text' name='description'><br>
+	    	<input type="submit" value="Upload Image" name="submit">
+
+		</fieldset>
+	</form>
+
+	<br><br>
+</fieldset>
+
+
+<fieldset style="width:50%;">
+	<legend style="text-align: center;"> <strong> Audio </strong> </legend>
+	
+	<form action="Audio.php" method="post" entype="multipart/form-data">
+		<fieldset>
+			<legend style="text-align: center;"> <b>Add New Audio</b> </legend>
+				Select audio to upload: <input type="file" name="audioToUpload" id="audioToUpload"><br>
+				Description : <input type='text' name='description'><br>
+			<input type="submit" value="Upload Audio" name="submit">
+		</fieldset>
+	</form>
+
+	<br><br>
+</fieldset>
+
+
+<fieldset style="width:50%;">
+	<legend style="text-align: center;"> <strong> Scalar Measurements </strong> </legend>
+
+	<form name="uploadMeasurements" method="post" action="Batch.php">
+		<fieldset>
+			<legend style="text-align: center;"><b>Scalar Measurements </b></legend>
+
+			<button type='submit' name='uploadMeasurementsBtn'>Scalar Measurements</button>
+		</fieldset>
+	</form>
+
+	<br><br>
+</fieldset>
+
+
+</body>
+
+</html>
