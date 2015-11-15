@@ -7,22 +7,17 @@
 			$fileName = $_FILES['audioToUpload']['name'];
 			// type of the file
 			$fileType = $_FILES['audioToUpload']['type'];
-			// size of the file
-			$fileSize = $_FILES['audioToUpload']['size'];
 			// temporary filename of the file in which the uploaded file was stored on the server
 			$tmpName = $_FILES['audioToUpload']['tmp_name'];
 			// description from user input
 			$description = $_POST['description'];
+			// length of the audio from user input
+			$length = $_POST['length'];
 
 			// directory where images will be saved
 			$target = "your directory";
 			$target = $target . basename($fileName);
 
-			// Check file size
-			if ($fileSize > 640000) { // check to see if it exceeds 64kb which is the limit for a blob
-			    echo "Sorry, your file is too large.";
-			    return;
-			}
 			// Allow certain file formats
 			if($fileType != "wav") {
 			    echo "Only wav allowed.";
@@ -50,7 +45,7 @@
 			$conn = connect();
 			$date = date('Y-m-d H:i:s',time());;
 			
-			$sql = 'INSERT INTO audio_recordings VALUES (\''.$recording_id.'\', 'sensor id', to_date(\''.$date.'\', \'yy-mm-dd hh24:mi:ss\'), 'length', 'recorded data', \''.$description.'\')';
+			$sql = 'INSERT INTO audio_recordings VALUES (\''.$recording_id.'\', 'sensor id', to_date(\''.$date.'\', \'yy-mm-dd hh24:mi:ss\'), \''.$length.'\', 'recorded data', \''.$description.'\')';
 			$stid = oci_parse($conn, $sql);
 			$res=oci_execute($stid);
 			if (!$res) {
