@@ -42,7 +42,6 @@
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
-			$conn = connect();
 			$date = date('Y-m-d H:i:s',time());;
 			
 			$sql = 'INSERT INTO audio_recordings VALUES (\''.$recording_id.'\', 'sensor id', to_date(\''.$date.'\', \'yy-mm-dd hh24:mi:ss\'), \''.$length.'\', 'recorded data', \''.$description.'\')';
@@ -61,8 +60,11 @@
 				echo "Problem uploading the audio recording.";
 			}
 
+			oci_close($conn);
+
 		}	
 
 		?>
+		<button><a href="UploadModule.html"> Go Back </a></button>
     </body>
 </html>

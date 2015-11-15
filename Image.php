@@ -51,7 +51,6 @@
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
-			$conn = connect();
 			$date = date('Y-m-d H:i:s',time());;
 			
 			$sql = 'INSERT INTO images VALUES (\''.$image_id.'\', 'sensor id', to_date(\''.$date.'\', \'yy-mm-dd hh24:mi:ss\'), 'recorded data', \''.$fileName.'\', \''.$description.'\')';
@@ -69,6 +68,8 @@
 			} else {
 				echo "Problem uploading the image.";
 			}
+
+			oci_close($conn);
 
 		}	
 			/*
@@ -122,5 +123,6 @@
 			}*/
 					
 		?>
+		<button><a href="UploadModule.html"> Go Back </a></button>
     </body>
 </html>
