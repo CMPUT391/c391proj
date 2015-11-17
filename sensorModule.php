@@ -7,8 +7,31 @@
 </head>
 
 <body>
-<body>
 	<div class='container'>
+
+	<?php
+		session_start();
+		// $_SESSION['status'] is the data passed from Login Module which will contain the type of user 
+		// $_SESSION['personid'] is the person id of the user
+		// END SESSION WHEN LOGOUT
+		// echo $_SESSION['personid'];
+		if ($_SESSION['status'] != 'a' && $_SESSION['status'] != 'd' && $_SESSION['status'] != 's') { ?>
+			Please Log in
+			<a href = 'LoginModule.html'>
+				<button>Login</button>
+			</a>
+	<?php 
+		exit; }
+		else if ($_SESSION['status'] != 'a') {
+			echo '<ul class="list-group">
+					<li class="list-group-item list-group-item-danger">Access Denied. This page is only accessible by admins.</li>
+				 </ul> <br>';
+			echo '<button class="btn btn-default" name="homeBtn"> <a href="MainPage.php"> Home </a></button>';
+		}
+		else {
+	?>
+
+
 	<button class='btn btn-default' name='homeBtn'> <a href="MainPage.php"> Home </a></button>
 
 	<h1> Sensors Module </h1>
@@ -180,6 +203,8 @@
 				<button type='submit' name='removeSensorBtn' class="btn btn-default">Remove</button>
 		</form>
 	</div>
+
+	<?php } ?>
 
 </body>
 
