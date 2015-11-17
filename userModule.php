@@ -74,7 +74,25 @@
 				return;
 			}
 
-			$sql = 'UPDATE persons SET first_name =\''.$first_name.'\', last_name=\''.$last_name.'\', address=\''.$address.'\', email=\''.$email.'\', phone=\''.$phone_number.'\' WHERE person_id=\''.$personID.'\'';
+			if (empty($first_name) && empty($last_name) && empty($address) && empty($email) && empty($phone_number)) {
+				echo 'Nothing to update.';
+				exit;
+			}
+
+			$sql = 'UPDATE persons SET ';
+			if (!empty($first_name))
+				$sql = $sql.'first_name =\''.$first_name.'\', ';
+			if (!empty($last_name))
+				$sql = $sql.'last_name=\''.$last_name.'\', ';
+			if (!empty($email))
+				$sql = $sql.'address=\''.$address.'\', ';
+			if (!empty($email))
+				$sql = $sql.'email=\''.$email.'\', ';
+			if (!empty($phone_number))
+				$sql = $sql.'phone=\''.$phone_number.'\', ';
+			$sql = substr($sql, 0, -2);
+			$sql = $sql.' WHERE person_id=\''.$personID.'\'';
+
 			echo $sql;
 			echo '<br>';
 
@@ -226,7 +244,7 @@
 			$password = $_POST['password'];
 			$role = $_POST['role'];
 			$person_id = $_POST['person_id'];
-			$date_registered = $_POST['date_registered'];
+			$date_registered = date('Y-m-d H:i:s',time());
 
 			if (empty($username)) {
 				echo 'Username cannot be blank. A username must be selected.';
@@ -277,7 +295,7 @@
 
 			$results = oci_fetch_array($stid, OCI_ASSOC);
 			if (empty($results)) {
-				echo 'PersonID: '.$personID.' is not in the database. Invalid. <br/>';
+				echo 'PersonID: '.$person_id.' is not in the database. Invalid. <br/>';
 				return;
 			}
 			
@@ -389,7 +407,21 @@
 				return;
 			}
 
-			$sql = 'UPDATE users SET password =\''.$password.'\', role=\''.$role.'\' WHERE user_name=\''.$username.'\'';
+			if ((empty($password)) && (empty($role))) {
+				echo 'Nothing to be changed. <br>';
+				exit;
+			} else if ((!empty($password)) && (!empty($role))) {
+				$sql = 'UPDATE users SET password =\''.$password.'\', role=\''.$role.'\' WHERE user_name=\''.$username.'\'';
+			} else {
+				$sql = 'UPDATE users SET ';
+				if (!empty($password)) {
+					$sql = $sql.'password =\''.$password.'\' WHERE user_name = \''.$username.'\'';
+				}
+				else if (!empty($role)) {
+					$sql = $sql.'role=\''.$role.'\' WHERE user_name=\''.$username.'\'';
+				}
+			}
+
 			echo $sql;
 			echo '<br>';
 

@@ -1,0 +1,163 @@
+<html>
+
+<head>
+<title>Search Module</title>
+<link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css">
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap-theme.min.css"> -->
+</head>
+
+<body>
+
+<div class='container'>
+<h1> Search Module </h1>
+<br>
+<legend> Search Conditions </legend>
+<form name='search' class="form-group" method='post' action='searchModule.php'>
+		<label for="keywords">Keywords</label>
+		<input type="text" class="form-control" name="keywords" placeholder="Enter keywords separated by a comma">
+	<br>
+		<label for="sensor_type">Sensor Type</label> 
+		<select name='sensor_type' class='form-control'>
+				<option disabled selected> --- Select a type --- </option>
+				<option value="a">Audio (a) </option>
+				<option value="i">Image (i) </option>
+				<option value="t">Temperature (t) </option>
+				<option value="o">Other(o) </option>
+			</select> <br>
+	<br>
+		<label for="sensorLocation">Sensor Location</label>
+		<input type="text" class="form-control" name="sensorLocation" placeholder="Sensor Location">
+	<br>
+	<div class="form-group has-warning">
+	  <label class="control-label" for="startDate">Start Date</label>
+	  <time  id="startDate" name="startDate" datetime="YYYY-MM-DDThh:mm:ssTZD">
+	  <input type="date" class="form-control" id="startDate" name="startDate">
+	</div>
+	<div class="form-group has-warning">
+	  <label class="control-label" for="endDate">End Date</label>
+	  <input type="date" class="form-control" name="endDate" id='endDate'>
+	</div>
+  <button type="submit" class="btn btn-primary" id='searchBtn' name="searchBtn">Submit</button>
+
+</form>
+
+
+<div class="card col-md-3" style="max-width:20rem;">
+  <img class="card-img-top img-thumbnail" src="pane4.jpg" alt="Card image cap">
+  <div class="card-block">
+    <h4 class="card-title">ImageID</h4>
+    <p class="card-text">aolfk dsj lfd ks fksdaf luksjadf 8oq43w7br fp9uoials dkfncoul;jaeshfil ukjdsa foulk javdnsi fjkadns kjf,n waso; 1234 678rsdd sadsaf 8123456</p>
+
+    <a href="#" class="btn btn-primary">Download</a>
+  </div>
+</div>
+
+
+<div class='imagesResults'>
+
+	<div class="card col-md-3" style="max-width:20rem;">
+	  <img class="card-img-top img-thumbnail" src="B6t_5IYCYAA0fEW.jpg-large.jpeg" alt="Card image cap">
+		<table class="table">
+			<tbody>
+				<tr>
+				    <td>ImageID: Rs. 1400000</td>
+				</tr>
+				<tr>
+				    <td>SensorID: 7 acres</td>
+				</tr>
+				<tr>
+				    <td>Description:  aolfk dsj lfd ks fksdaf luksjadf 8oq43w7br fp9uoials dkfncoul;jaeshfil ukjdsa foulk javdnsi fjkadns kjf,n waso; 1234 678rsdd sadsaf 8123456</td>
+				</tr>
+				<tr>
+				    <td>Date Created: 15</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class='card-block'>
+	    <a href="#" class="btn btn-primary">Download</a>
+	  </div>
+	</div>
+
+
+	<div class="card col-md-3" style="max-width:20rem;">
+	  <img class="card-img-top img-thumbnail" src="B7f8FvtCcAAuVos.jpg-large.jpeg" alt="Card image cap">
+	  <div class="card-block">
+		<ul class="list-group list-group-flush">
+			<li class="list-group-item">ImageID : </li>
+			<li class="list-group-item">SensorID : </li>
+			<li class="list-group-item">Description: aolfk dsj lfd ks fksdaf luksjadf 8oq43w7br fp9uoials dkfncoul;jaeshfil ukjdsa foulk javdnsi fjkadns kjf,n waso; 1234 678rsdd sadsaf 8123456</li>
+			<li class="list-group-item">Date Created: </li>
+		</ul>
+		<br>
+	    <a href="#" class="btn btn-primary">Download</a>
+	  </div>
+	</div>
+
+</div>
+
+<div class="audioReults">
+	<div class="card col-md-3" style="max-width:20rem;">
+		<table class="table">
+			<tbody>
+				<tr>
+				    <td>RecordingID: Rs. 1400000</td>
+				</tr>
+				<tr>
+				    <td>SensorID: 7 acres</td>
+				</tr>
+				<tr>
+				    <td>Description:  aolfk dsj lfd ks fksdaf luksjadf 8oq43w7br fp9uoials dkfncoul;jaeshfil ukjdsa foulk javdnsi fjkadns kjf,n waso; 1234 678rsdd sadsaf 8123456</td>
+				</tr>
+				<tr>
+				    <td>Date Created: 15</td>
+				</tr>
+				<tr>
+				    <td>Length: 15</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class='card-block'>
+	    	<a href="#" class="btn btn-primary">Download</a>
+	  </div>
+	</div>
+</div>
+
+
+<div class="scalarResults">
+	<div class="card col-md-3" style="max-width:20rem;">
+		<table class="table">
+			<tbody>
+				<tr>
+				    <td>ID: Rs. 1400000</td>
+				</tr>
+				<tr>
+				    <td>SensorID: 7 acres</td>
+				</tr>
+				<tr>
+				    <td>Date Created: 15</td>
+				</tr>
+				<tr>
+					<td> Value: 12321.214 </td>
+				</tr>
+			</tbody>
+		</table>
+		<div class='card-block'>
+	    <a href="#" class="btn btn-primary">Download</a>
+	  </div>
+	</div>
+
+
+
+
+</div>
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
+
+</body>
+
+</html>

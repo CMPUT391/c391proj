@@ -13,8 +13,6 @@
 			$type=$_POST['sensor_type'];
 			$description = $_POST['sensor_description'];
 
-			//generateSensorID($conn); //- NOTE: Must drop sequence then initiate / create sequence once at beginning ex when populate db with admin user.
-
 			$sql = 'INSERT INTO sensors VALUES ( sensor_id.nextval, \''.$location.'\', \''.$type.'\', \''.$description.'\')';
 
 			echo $sql;
@@ -32,7 +30,7 @@
 			echo htmlentities($err['message']);
 			}
 			else{
-				echo 'Row inserted <br/>';
+				echo 'Sensor inserted <br/>';
 				echo 'Sensor Location: '.$location.'.<br/> Sensor Type: '.$type.'.<br/>Sensor Description: '.$description.'. <br/><br/>';
 			}
 
@@ -86,7 +84,7 @@
 			echo htmlentities($err['message']);
 			}
 			else{
-			echo 'Row deleted <br/>';
+			echo 'Sensor deleted <br/>';
 			}
 
 			// Free the statement identifier when closing the connection

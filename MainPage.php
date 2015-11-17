@@ -51,6 +51,10 @@
 			<button>Go to subscribe module</button>
 		</a>
 
+		<a href="searchModule.html">
+			<button>Go to Search module</button>
+		</a>
+
 		<?php	
 		} else {
 			echo "Welcome Data Curator";
