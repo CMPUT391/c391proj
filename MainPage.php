@@ -19,7 +19,7 @@
 			<button>Logout</button>
 		</a> 
 	
-		<a href="sensorModule.html">
+		<a href="sensorModule.php">
 			<button>Go to Sensor module</button>
 		</a>
 
@@ -39,7 +39,7 @@
 			<button>Logout</button>
 		</a>
 	
-		<a href="sensorModule.html">
+		<a href="sensorModule.php">
 			<button>Go to Sensor module</button>
 		</a>
 
@@ -63,7 +63,7 @@
 			<button>Logout</button>
 		</a>
 	
-		<a href="sensorModule.html">
+		<a href="sensorModule.php">
 			<button>Go to Sensor module</button>
 		</a>
 
