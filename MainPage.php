@@ -23,7 +23,7 @@
 			<button>Go to Sensor module</button>
 		</a>
 
-		<a href="userModule.html">
+		<a href="userModule.php">
 			<button>Go to User module</button>
 		</a>
 
@@ -37,14 +37,6 @@
 		?>
 		<a href ='LogoutModule.php'>
 			<button>Logout</button>
-		</a>
-	
-		<a href="sensorModule.php">
-			<button>Go to Sensor module</button>
-		</a>
-
-		<a href="userModule.html">
-			<button>Go to User module</button>
 		</a>
 		
 		<a href="subscribeModule.php">
@@ -61,14 +53,6 @@
 		?>
 		<a href ='LogoutModule.php'>
 			<button>Logout</button>
-		</a>
-	
-		<a href="sensorModule.php">
-			<button>Go to Sensor module</button>
-		</a>
-
-		<a href="userModule.html">
-			<button>Go to User module</button>
 		</a>
 
 		<a href="subscribeModule.php">
