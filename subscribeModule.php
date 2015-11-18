@@ -138,7 +138,6 @@
             $rows = get_sensors($conn);
             if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $submit = $_POST['sensors'];
-                echo "Subscribed to selected sensors";
                 $i = 0;                
                 foreach($rows as $row){
                     if(!empty($submit) and in_array($row['SENSOR_ID'],$submit)){
@@ -148,6 +147,7 @@
                     }
                     $i++;
                 }
+                echo "Subscribed to selected sensors. (Total:".count(get_subscribed_sensors($conn,$pid)).")";
             }
     
             
