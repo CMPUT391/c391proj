@@ -1,0 +1,38 @@
+<html>
+
+<head>
+<title>Search Module</title>
+<link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css">
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap-theme.min.css"> -->
+</head>
+
+<body>
+
+<div class='container'>
+<h1> Data Analysis Module </h1>
+<br>
+<legend> Search Conditions </legend>
+<form name='search' class="form-group" method='post' action='dataAnalysisModule.php'>
+	<br>
+		<label for="search_range">Search Range</label> 
+		<select name='search_range' class='form-control'>
+				<option disabled selected> --- Select a type --- </option>
+				<option value="y">Yearly</option>
+				<option value="q">Quarterly</option>
+				<option value="m">Monthly</option>
+				<option value="w">Weekly</option>
+				<option value="d">Daily</option>
+		</select> <br>
+  <button type="submit" class="btn btn-primary" id='searchBtn' name="searchBtn">Submit</button>
+
+</form>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
+
+</body>
+
+</html>
