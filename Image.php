@@ -1,10 +1,12 @@
 <html>
     <body>    	
 		<?php
+		include("PHPconnectionDB.php");
 		// http://www.w3schools.com/php/php_file_upload.asp
 		// http://coyotelab.org/php/upload-csv-and-insert-into-database-using-phpmysql.html
 		// http://www.php-mysql-tutorial.com/wikis/mysql-tutorials/uploading-files-to-mysql-database.aspx
-
+		// http://php.net/manual/en/function.oci-new-descriptor.php
+		
 		if(isset($_POST['submit']) && $_FILES['imageToUpload']['size'] > 0) {
 			
 			// name of the file
@@ -15,6 +17,8 @@
 			$fileSize = $_FILES['imageToUpload']['size'];
 			// temporary filename of the file in which the uploaded file was stored on the server
 			$tmpName = $_FILES['imageToUpload']['tmp_name'];
+			// sensor id from user
+			$sensor_id = $_POST['sensor_id'];
 			// description from user input
 			$description = $_POST['description'];
 
@@ -25,16 +29,51 @@
 			// Check file size
 			if ($fileSize > 640000) { // check to see if it exceeds 64kb which is the limit for a blob
 			    echo "Sorry, your file is too large.";
+				?>
+				<a href ='UploadModule.html'>
+					<button>Retry</button>
+				</a>
+				<?php
 			    return;
 			}
 			// Allow certain file formats
-			if($fileType != "jpg") {
+			if($fileType != "image/jpg" && $fileType != "image/jpeg") {
 			    echo "Only JPG allowed.";
+				?>
+				<a href ='UploadModule.html'>
+					<button>Retry</button>
+				</a>
+				<?php
 			    return;
 			}
-
+			// Check if sensor_id is valid
 			// setup connection
 			$conn = connect();
+			$imageData = file_get_contents($tmpName);			
+
+			$sql = "SELECT * FROM sensors WHERE sensors.sensor_id = '$sensor_id'";
+			$stid = oci_parse($conn, $sql);
+			$res = oci_execute($stid);
+
+			//if error, retrieve the error using the oci_error() function & output an error
+			if (!$res) {
+				$err = oci_error($stid);
+				echo htmlentities($err['message']);
+			}
+			$row = oci_fetch_array($stid, OCI_ASSOC);
+			if (empty($row)) {
+				// no id exists
+				echo "Not a valid sensor ID";
+				oci_free_statement($stid);
+				oci_close($conn);
+				?>
+				<a href ='UploadModule.html'>
+					<button>Retry</button>
+				</a>
+				<?php
+				return;
+			}
+			oci_free_statement($stid);
 			// get an unique image id
 			$sql = 'SELECT MAX(image_id) FROM images';
 			//Prepare sql using conn and returns the statement identifier
@@ -46,83 +85,61 @@
 				$err = oci_error($stid); 
 				echo htmlentities($err['message']);
 			}
-			$image_id = $res + 1; // create a new image id
+
+			$row = oci_fetch_array($stid, OCI_ASSOC);
+			if (empty($row)) {
+				// no id exists, start at 1
+				$image_id = 1;
+			} else {
+				foreach ($row as $item) {
+					$image_id = $item + 1; // add 1 to max
+				}
+			}
+			
 			// Free the statement identifier when closing the connection
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
 			$date = date('Y-m-d H:i:s',time());;
+
+			$lob = oci_new_descriptor($conn, OCI_D_LOB);
+			$stmt = oci_parse($conn, "INSERT INTO images(image_id, sensor_id, date_created, description, thumbnail, recoreded_data) VALUES ('$image_id', '$sensor_id', NULL, '$description', empty_blob(), empty_blob()) returning thumbnail, recoreded_data into :thumbnail, :recoreded_data");
 			
-			$sql = 'INSERT INTO images VALUES (\''.$image_id.'\', 'sensor id', to_date(\''.$date.'\', \'yy-mm-dd hh24:mi:ss\'), 'recorded data', \''.$fileName.'\', \''.$description.'\')';
-			$stid = oci_parse($conn, $sql);
-			$res=oci_execute($stid);
-			if (!$res) {
-				$err = oci_error($stid); 
-				echo htmlentities($err['message']);
-			}
-			oci_free_statement($stid);
+			oci_bind_by_name($stmt, ':thumbnail', $lob, -1, OCI_B_BLOB);
+			oci_bind_by_name($stmt, ':recoreded_data', $lob, -1, OCI_B_BLOB);
+			oci_execute($stmt, OCI_NO_AUTO_COMMIT);
 
-			// now write image to server
-			if (move_uploaded_file($tmpName, $target)) {
-				echo "Successfully uploaded and stored in the directory.";
+			if ($lob->savefile($tmpName)) {
+				oci_commit($conn);
+				echo "successful thumbnail and recorded data upload";
+				$lob->free();
+				oci_free_statement($stmt);
+				oci_close($conn);
+				?>
+				<a href ='UploadModule.html'>
+					<button>Return</button>
+				</a>
+				<?php
 			} else {
-				echo "Problem uploading the image.";
+				echo "failed thumbnail and recorded data upload";
+				$lob->free();
+				oci_free_statement($stmt);
+				oci_close($conn);
+				?>
+				<a href ='UploadModule.html'>
+					<button>Return</button>
+				</a>
+				<?php
 			}
 
-			oci_close($conn);
-
-		}	
-			/*
-			$target_dir = "uploads/"; // directory where the file is placed
-			$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-			$description = $_POST['description'];
-			$uploadOk = 1;
-			$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
-
-			// Check if image file is a actual image or fake image
-			if(isset($_POST["submit"])) {
-			    $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-			    if($check !== false) {
-			        echo "File is an image - " . $check["mime"] . ".";
-			        $uploadOk = 1;
-			    } else {
-			        echo "File is not an image.";
-			        $uploadOk = 0;
-			    }
-			}
-			// Check if file already exists
-			if (file_exists($target_file)) {
-			    echo "Sorry, file already exists.";
-			    $uploadOk = 0;
-			}			
-
-			// Check if $uploadOk is set to 0 by an error
-			if ($uploadOk == 0) {
-			    echo "File was not uploaded.";
-			// if everything is ok, try to upload file
-			} else {
-			    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-			        echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
-			        $date = date('Y-m-d H:i:s',time());;
-			        $sql = 'INSERT INTO images VALUES ('image id', 'sensor id', to_date(\''.$date.'\', \'yy-mm-dd hh24:mi:ss\'), 'recorded data', 'thumbnail', \''.$description.'\')';
-			        //Prepare sql using conn and returns the statement identifier
-					$stid = oci_parse($conn, $sql);
-					//Execute a statement returned from oci_parse()
-					$res=oci_execute($stid);
-					//if error, retrieve the error using the oci_error() function & output an error message
-					if (!$res) {
-						$err = oci_error($stid); 
-						echo htmlentities($err['message']);
-					}
-					// Free the statement identifier when closing the connection
-					oci_free_statement($stid);
-
-			    } else {
-			        echo "Sorry, there was an error uploading your file.";
-			    }
-			}*/
-					
+		} else {		
 		?>
-		<button><a href="UploadModule.html"> Go Back </a></button>
+		Missing some fields. 
+		<a href ='UploadModule.html'>
+			<button>Go Back</button>
+		</a>
+		<?php
+		}
+		?>
     </body>
 </html>

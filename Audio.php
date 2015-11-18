@@ -1,7 +1,7 @@
 <html>
     <body>    	
 		<?php
-
+		include("PHPconnectionDB.php");
 		if(isset($_POST['submit']) && $_FILES['audioToUpload']['size'] > 0) {
 			// name of the file
 			$fileName = $_FILES['audioToUpload']['name'];
@@ -11,6 +11,8 @@
 			$tmpName = $_FILES['audioToUpload']['tmp_name'];
 			// description from user input
 			$description = $_POST['description'];
+			// sensor id from user
+			$sensor_id = $_POST['sensor_id'];
 			// length of the audio from user input
 			$length = $_POST['length'];
 
@@ -19,9 +21,39 @@
 			$target = $target . basename($fileName);
 
 			// Allow certain file formats
-			if($fileType != "wav") {
+			if($fileType != "audio/x-wav") {
 			    echo "Only wav allowed.";
+				?>
+				<a href ='UploadModule.html'>
+				<button>Retry</button>
+				</a>
+				<?php
 			    return;
+			}
+			// Check if sensor_id is valid
+			// setup connection
+			$conn = connect();
+			$sql = "SELECT * FROM sensors WHERE sensors.sensor_id = '$sensor_id'";
+			$stid = oci_parse($conn, $sql);
+			$res = oci_execute($stid);
+
+			//if error, retrieve the error using the oci_error() function & output an error
+			if (!$res) {
+				$err = oci_error($stid);
+				echo htmlentities($err['message']);
+			}
+			$row = oci_fetch_array($stid, OCI_ASSOC);
+			if (empty($row)) {
+				// no id exists
+				echo "Not a valid sensor ID";
+				oci_free_statement($stid);
+				oci_close($conn);
+				?>
+				<a href ='UploadModule.html'>
+				<button>Retry</button>
+				</a>
+				<?php
+				return;
 			}
 
 			// setup connection
@@ -37,34 +69,59 @@
 				$err = oci_error($stid); 
 				echo htmlentities($err['message']);
 			}
-			$recording_id = $res + 1; // create a new image id
+			$row = oci_fetch_array($stid, OCI_ASSOC);
+			if (empty($row)) {
+				// no id exists, start at 1
+				$recording_id = 1;
+			} else {
+				foreach ($row as $item) {
+					$recording_id = $item + 1; // add 1 to max
+				}
+			}
 			// Free the statement identifier when closing the connection
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
 			$date = date('Y-m-d H:i:s',time());;
 			
-			$sql = 'INSERT INTO audio_recordings VALUES (\''.$recording_id.'\', 'sensor id', to_date(\''.$date.'\', \'yy-mm-dd hh24:mi:ss\'), \''.$length.'\', 'recorded data', \''.$description.'\')';
-			$stid = oci_parse($conn, $sql);
-			$res=oci_execute($stid);
-			if (!$res) {
-				$err = oci_error($stid); 
-				echo htmlentities($err['message']);
-			}
-			oci_free_statement($stid);
+			$lob = oci_new_descriptor($conn, OCI_D_LOB);
+			$stmt = oci_parse($conn, "INSERT INTO audio_recordings(recording_id, sensor_id, date_created, description, recorded_data) VALUES ('$recording_id', '$sensor_id', NULL, '$description', empty_blob()) returning recorded_data into :recorded_data");
+			
+			oci_bind_by_name($stmt, ':recorded_data', $lob, -1, OCI_B_BLOB);
+			oci_execute($stmt, OCI_NO_AUTO_COMMIT);
 
-			// now write image to server
-			if (move_uploaded_file($tmpName, $target)) {
-				echo "Successfully uploaded and stored in the directory.";
+			if ($lob->savefile($tmpName)) {
+				oci_commit($conn);
+				echo "successful audio upload";
+				$lob->free();
+				oci_free_statement($stmt);
+				oci_close($conn);
+				?>
+				<a href ='UploadModule.html'>
+					<button>Return</button>
+				</a>
+				<?php
 			} else {
-				echo "Problem uploading the audio recording.";
+				echo "failed audio upload";
+				$lob->free();
+				oci_free_statement($stmt);
+				oci_close($conn);
+				?>
+				<a href ='UploadModule.html'>
+					<button>Return</button>
+				</a>
+				<?php
 			}
 
-			oci_close($conn);
-
-		}	
+		} else {	
 
 		?>
-		<button><a href="UploadModule.html"> Go Back </a></button>
+		Missing some fields.
+		<a href ='UploadModule.html'>
+			<button>Go Back</button>
+		</a>
+		<?php
+		}
+		?>
     </body>
 </html>
