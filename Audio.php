@@ -82,10 +82,10 @@
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
-			$date = date('Y-m-d H:i:s',time());;
+			$date = date('d-m-y h:m:s',time());;
 			
 			$lob = oci_new_descriptor($conn, OCI_D_LOB);
-			$stmt = oci_parse($conn, "INSERT INTO audio_recordings(recording_id, sensor_id, date_created, description, recorded_data) VALUES ('$recording_id', '$sensor_id', NULL, '$description', empty_blob()) returning recorded_data into :recorded_data");
+			$stmt = oci_parse($conn, "INSERT INTO audio_recordings(recording_id, sensor_id, date_created, description, recorded_data) VALUES ('$recording_id', '$sensor_id', to_date('$date', 'dd-mm-yyyy hh24:mi:ss'), '$description', empty_blob()) returning recorded_data into :recorded_data");
 			
 			oci_bind_by_name($stmt, ':recorded_data', $lob, -1, OCI_B_BLOB);
 			oci_execute($stmt, OCI_NO_AUTO_COMMIT);

@@ -2,11 +2,15 @@
     <body>    	
 		<?php
 		include("PHPconnectionDB.php");
+		// http://www.w3bees.com/2013/03/directory-upload-using-html-5-and-php.html
 		// http://www.w3schools.com/php/php_file_upload.asp
 		// http://coyotelab.org/php/upload-csv-and-insert-into-database-using-phpmysql.html
 		// http://www.php-mysql-tutorial.com/wikis/mysql-tutorials/uploading-files-to-mysql-database.aspx
 		// http://php.net/manual/en/function.oci-new-descriptor.php
-		
+		/*if($_FILES['file_input']) {
+			echo "uploading a directory";	
+			return;	
+		}*/
 		if(isset($_POST['submit']) && $_FILES['imageToUpload']['size'] > 0) {
 			
 			// name of the file
@@ -100,10 +104,10 @@
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
-			$date = date('Y-m-d H:i:s',time());;
+			$date = date('d-m-y h:m:s',time());;
 
 			$lob = oci_new_descriptor($conn, OCI_D_LOB);
-			$stmt = oci_parse($conn, "INSERT INTO images(image_id, sensor_id, date_created, description, thumbnail, recoreded_data) VALUES ('$image_id', '$sensor_id', NULL, '$description', empty_blob(), empty_blob()) returning thumbnail, recoreded_data into :thumbnail, :recoreded_data");
+			$stmt = oci_parse($conn, "INSERT INTO images(image_id, sensor_id, date_created, description, thumbnail, recoreded_data) VALUES ('$image_id', '$sensor_id', to_date('$date', 'dd-mm-yyyy hh24:mi:ss'), '$description', empty_blob(), empty_blob()) returning thumbnail, recoreded_data into :thumbnail, :recoreded_data");
 			
 			oci_bind_by_name($stmt, ':thumbnail', $lob, -1, OCI_B_BLOB);
 			oci_bind_by_name($stmt, ':recoreded_data', $lob, -1, OCI_B_BLOB);
@@ -114,6 +118,27 @@
 				echo "successful thumbnail and recorded data upload";
 				$lob->free();
 				oci_free_statement($stmt);
+				/*
+				// grab thumbnail now and then resize it
+				$sql = "SELECT thumbnail FROM images WHERE image_id=".$image_id;
+				$stid = oci_parse($conn, $sql);
+				$res=oci_execute($stid);
+				if (!$res) {
+					$err = oci_error($stid); 
+					echo htmlentities($err['message']);
+				}
+				$row = oci_fetch_array($stid, OCI_ASSOC);
+				foreach($row as $item) {
+					// resize here, item is the image in hex
+					$gd = imagecreatefromstring($blob);
+					$resized = imagecreatetruecolor(50,50);
+					$source = imagecreatefromjpeg($gd);
+					//ob_start();
+					imagejpeg($resized);
+					
+					$sql = "UPDATE images SET thumbnail=".$item."WHERE image_id=".$image_id;
+				}
+				*/
 				oci_close($conn);
 				?>
 				<a href ='UploadModule.html'>
