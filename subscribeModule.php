@@ -184,6 +184,7 @@
             echo "</form>";
 	
 	    ?>
+	<a href="MainPage.php" class="btn btn-primary">Back</a>
 	</div>
     </body>
 </html>
