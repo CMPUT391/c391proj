@@ -7,10 +7,22 @@
 		// http://coyotelab.org/php/upload-csv-and-insert-into-database-using-phpmysql.html
 		// http://www.php-mysql-tutorial.com/wikis/mysql-tutorials/uploading-files-to-mysql-database.aspx
 		// http://php.net/manual/en/function.oci-new-descriptor.php
+		// http://www.sum-it.nl/en200319.php
+		// http://stackoverflow.com/questions/189368/creating-an-image-without-storing-it-as-a-local-file
+		// http://stackoverflow.com/questions/19486445/php-imagejpeg-displays-weird-characters
 		/*if($_FILES['file_input']) {
 			echo "uploading a directory";	
 			return;	
 		}*/
+		session_start();
+		if ($_SESSION['status'] != 'd') {?>
+			Not a valid data curator, Please log in again. 
+			<a href = 'LogoutModule.php'>
+				<button>Login</button>
+			</a>
+		<?php
+			return;
+		}
 		if(isset($_POST['submit']) && $_FILES['imageToUpload']['size'] > 0) {
 			
 			// name of the file
@@ -107,38 +119,40 @@
 			$date = date('d-m-y h:m:s',time());;
 
 			$lob = oci_new_descriptor($conn, OCI_D_LOB);
+			$thumblob = oci_new_descriptor($conn, OCI_D_LOB);
+
 			$stmt = oci_parse($conn, "INSERT INTO images(image_id, sensor_id, date_created, description, thumbnail, recoreded_data) VALUES ('$image_id', '$sensor_id', to_date('$date', 'dd-mm-yyyy hh24:mi:ss'), '$description', empty_blob(), empty_blob()) returning thumbnail, recoreded_data into :thumbnail, :recoreded_data");
 			
-			oci_bind_by_name($stmt, ':thumbnail', $lob, -1, OCI_B_BLOB);
+			oci_bind_by_name($stmt, ':thumbnail', $thumblob, -1, OCI_B_BLOB);
 			oci_bind_by_name($stmt, ':recoreded_data', $lob, -1, OCI_B_BLOB);
 			oci_execute($stmt, OCI_NO_AUTO_COMMIT);
 
-			if ($lob->savefile($tmpName)) {
+			// resize image
+			$size = GetimageSize($tmpName);
+			$Img = ImageCreateFromJpeg($tmpName);
+			$oldWidth = imagesx($Img);
+			$oldHeight = imagesy($Img);
+
+			$newWidth = 50;
+			$newHeight = 50;
+			$images_fin = ImageCreateTrueColor($newWidth, $newHeight);
+			ImageCopyResampled($images_fin, $Img, 0, 0, 0, 0, $newWidth, $newHeight, $oldWidth, $oldHeight);
+			
+			ob_start();
+			imagejpeg($images_fin);
+			$data = ob_get_contents();
+			ob_end_clean();
+			//echo base64_encode($data);
+			$image = "<img src='data:image/jpeg;base64,".base64_encode ($data)."'>";
+			//echo $image;
+			$sBinaryThumbnail = base64_encode($data);
+			//echo $sBinaryThumbnail;
+	
+			if ($lob->savefile($tmpName) and $thumblob->save($sBinaryThumbnail)) {
 				oci_commit($conn);
 				echo "successful thumbnail and recorded data upload";
 				$lob->free();
 				oci_free_statement($stmt);
-				/*
-				// grab thumbnail now and then resize it
-				$sql = "SELECT thumbnail FROM images WHERE image_id=".$image_id;
-				$stid = oci_parse($conn, $sql);
-				$res=oci_execute($stid);
-				if (!$res) {
-					$err = oci_error($stid); 
-					echo htmlentities($err['message']);
-				}
-				$row = oci_fetch_array($stid, OCI_ASSOC);
-				foreach($row as $item) {
-					// resize here, item is the image in hex
-					$gd = imagecreatefromstring($blob);
-					$resized = imagecreatetruecolor(50,50);
-					$source = imagecreatefromjpeg($gd);
-					//ob_start();
-					imagejpeg($resized);
-					
-					$sql = "UPDATE images SET thumbnail=".$item."WHERE image_id=".$image_id;
-				}
-				*/
 				oci_close($conn);
 				?>
 				<a href ='UploadModule.html'>

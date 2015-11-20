@@ -2,6 +2,15 @@
     <body>    	
 		<?php
 		include("PHPconnectionDB.php");
+		session_start();
+		if ($_SESSION['status'] != 'd') {?>
+			Not a valid data curator, Please log in again. 
+			<a href = 'LogoutModule.php'>
+				<button>Login</button>
+			</a>
+		<?php
+			return;
+		}
 		if(isset($_POST['submit']) && $_FILES['audioToUpload']['size'] > 0) {
 			// name of the file
 			$fileName = $_FILES['audioToUpload']['name'];

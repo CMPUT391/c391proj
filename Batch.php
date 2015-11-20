@@ -3,7 +3,15 @@
 		<?php
 		include("PHPconnectionDB.php");
 		// http://stackoverflow.com/questions/21332380/csv-upload-with-php-mysql
-		
+		session_start();
+		if ($_SESSION['status'] != 'd') {?>
+			Not a valid data curator, Please log in again. 
+			<a href = 'LogoutModule.php'>
+				<button>Login</button>
+			</a>
+		<?php
+			return;
+		}
 		if(isset($_POST['submit']) && $_FILES['batchToUpload']['size'] > 0) {
 			// csv file in format sensor_id, date (dd/mm/yyyy time), value
 			$csv_file = $_FILES['batchToUpload']['tmp_name'];
