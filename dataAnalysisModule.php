@@ -9,8 +9,17 @@
     <div class='container'>
 	<?php
 		include ("PHPconnectionDB.php");
+        session_start();
+            if ($_SESSION['status'] != 's') {?>
+                Not a valid scientist, Please log in again. 
+                <a href = 'LogoutModule.php'>
+                    <button>Login</button>
+                </a>
+                <?php
+                return;
+            }
+        $pid = $_SESSION['personid'];
         $conn=connect();
-        $pid = 1;
 
         function get_subscribed_sensors($conn,$person_id){
 	        #echo "getting all sensored subscribed by pid:$person_id<br>";
@@ -148,7 +157,7 @@
             $year=EXTRACT(year FROM date_created)";
             $stid = oci_parse($conn,$sql);
             $res = oci_execute($stid);
-
+            $first = true;
             if (!$res) {
                 $err = oci_error($stid);
                 echo htmlentities($err['message']);
@@ -156,13 +165,20 @@
                 #echo 'Rows Extracted <br/>'; 
             }
             while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
+                if($first){
+                    echo "<table class='table table-hover'><tr><td>Year</td><td>Max</td><td>Min</td><td>Avg</td></tr>";
+                    $first = false;
+                }
                 //echo "dfklgjldkgj";
-                echo "MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
+                echo "<tr><td>".$year."</td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
+                //echo "MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
                 $value = $row;
             }
             oci_free_statement($stid);
             if ($value == NULL){
                 echo "no data";
+            } else {
+                echo "</table>";
             }
             return $value;
         }
@@ -180,7 +196,7 @@
             ORDER BY to_number(to_char(date_created,'Q'))";
             $stid = oci_parse($conn,$sql);
             $res = oci_execute($stid);
-
+            $first = true;
             if (!$res) {
                 $err = oci_error($stid);
                 echo htmlentities($err['message']);
@@ -188,18 +204,25 @@
                 #echo 'Rows Extracted <br/>'; 
             }
             while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
+                if($first){
+                    echo "<table class='table table-hover'><tr><td>Quarter</td><td>Max</td><td>Min</td><td>Avg</td></tr>";
+                    $first = false;
+                }
                 //echo "dfklgjldkgj";
                 /*
                 foreach($row as $key => $value){
                     echo $key;
                 }*/
-                echo "Quarter:".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'Q'))"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
-                echo "<br>";
+                echo "<tr><td>".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'Q'))"]."</td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
+                //echo "Quarter:".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'Q'))"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
+                //echo "<br>";
                 $value = $row;
             }
             oci_free_statement($stid);
             if ($value == NULL){
                 echo "no data";
+            } else {
+                echo "</table>";
             }
             return $value;
         }
@@ -217,7 +240,7 @@
             ORDER BY EXTRACT(month FROM date_created)";
             $stid = oci_parse($conn,$sql);
             $res = oci_execute($stid);
-
+            $first = true;
             if (!$res) {
                 $err = oci_error($stid);
                 echo htmlentities($err['message']);
@@ -225,18 +248,25 @@
                 #echo 'Rows Extracted <br/>'; 
             }
             while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
+                if($first){
+                    echo "<table class='table table-hover'><tr><td>Month</td><td>Max</td><td>Min</td><td>Avg</td></tr>";
+                    $first = false;
+                }
                 //echo "dfklgjldkgj";
                 /*
                 foreach($row as $key => $value){
                     echo $key;
                 }*/
-                echo "Month:".$row["EXTRACT(MONTHFROMDATE_CREATED)"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
-                echo "<br>";
+                echo "<tr><td>".$row["EXTRACT(MONTHFROMDATE_CREATED)"]."</td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
+                //echo "Month:".$row["EXTRACT(MONTHFROMDATE_CREATED)"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
+                //echo "<br>";
                 $value = $row;
             }
             oci_free_statement($stid);
             if ($value == NULL){
                 echo "no data";
+            } else {
+                echo "</table>";
             }
             return $value;
         }
@@ -245,7 +275,7 @@
             $year = intval($year);
             //echo $year;
             //$year = intval($year);
-
+            $first = true;
             $value;
             $sql = "SELECT MAX(value),MIN(value),AVG(value), to_number(to_char(date_created,'WW')) FROM scalar_data
             WHERE $sensor_id=sensor_id AND
@@ -262,18 +292,25 @@
                 #echo 'Rows Extracted <br/>'; 
             }
             while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
+                if($first){
+                    echo "<table class='table table-hover'><tr><td>Week</td><td>Max</td><td>Min</td><td>Avg</td></tr>";
+                    $first = false;
+                }
                 //echo "dfklgjldkgj";
                 /*
                 foreach($row as $key => $value){
                     echo $key;
                 }*/
-                echo "Week:".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'WW'))"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
-                echo "<br>";
+                echo "<tr><td>".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'WW'))"]."</td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
+                //echo "Week:".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'WW'))"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
+                //echo "<br>";
                 $value = $row;
             }
             oci_free_statement($stid);
             if ($value == NULL){
                 echo "no data";
+            } else {
+                echo "</table>";
             }
             return $value;
         }
@@ -282,7 +319,7 @@
             $year = intval($year);
             //echo $year;
             //$year = intval($year);
-
+            $first = true;
             $value;
             $sql = "SELECT MAX(value),MIN(value),AVG(value), to_number(to_char(date_created,'DDD')) FROM scalar_data
             WHERE $sensor_id=sensor_id AND
@@ -298,25 +335,34 @@
             } else { 
                 #echo 'Rows Extracted <br/>'; 
             }
+
             while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
+                if($first){
+                    echo "<table class='table table-hover'><tr><td>Day</td><td>Max</td><td>Min</td><td>Avg</td></tr>";
+                    $first = false;
+                }
                 //echo "dfklgjldkgj";
                 /*
                 foreach($row as $key => $value){
                     echo $key;
                 }*/
-                echo "Day:".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'DDD'))"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
-                echo "<br>";
+                echo "<tr><td>".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'DDD'))"]."</td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
+                //echo "Day:".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'DDD'))"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
+                //echo "<br>";
                 $value = $row;
             }
             oci_free_statement($stid);
             if ($value == NULL){
                 echo "no data";
+            } else {
+                echo "</table>";
             }
             return $value;
         }
 
 
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            echo "<legend> Search Results </legend>";
         	$valid = true;
         	if($_POST['analysis_sid'] == NULL){
         		echo "<p>Error: Please select a valid sensor.</p><br>";
@@ -339,23 +385,23 @@
 	            data_analysis_all($conn,$_POST['analysis_sid'],2);*/
                 echo "<br>";
                 if($_POST['analysis_range'] == 'y'){
-                    echo "<p>Report for Year: ".$_POST['analysis_year']."</p><br>";
+                    //echo "<p>Report for Year: ".$_POST['analysis_year']."</p><br>";
                     data_analysis_year($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
                 }
                 if($_POST['analysis_range'] == 'q'){
-                    echo "<p>Quarterly Report for Year: ".$_POST['analysis_year']."</p><br>";
+                    //echo "<p>Quarterly Report for Year: ".$_POST['analysis_year']."</p><br>";
                     data_analysis_quarter($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
                 }
                 if($_POST['analysis_range'] == 'm'){
-                    echo "<p>Monthly Report for Year: ".$_POST['analysis_year']."</p><br>";
+                    //echo "<p>Monthly Report for Year: ".$_POST['analysis_year']."</p><br>";
                     data_analysis_month($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
                 }
                 if($_POST['analysis_range'] == 'w'){
-                    echo "<p>Weekly Report for Year: ".$_POST['analysis_year']."</p><br>";
+                    //echo "<p>Weekly Report for Year: ".$_POST['analysis_year']."</p><br>";
                     data_analysis_week($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
                 }
                 if($_POST['analysis_range'] == 'd'){
-                    echo "<p>Daily Report for Year: ".$_POST['analysis_year']."</p><br>";
+                    //echo "<p>Daily Report for Year: ".$_POST['analysis_year']."</p><br>";
                     data_analysis_day($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
                 }
 	        }

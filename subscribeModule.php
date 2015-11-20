@@ -137,9 +137,18 @@
 	    include ("PHPconnectionDB.php");        
 	    //establish connection
             $conn=connect();
+
+            session_start();
+			if ($_SESSION['status'] != 's') {?>
+				Not a valid scientist, Please log in again. 
+				<a href = 'LogoutModule.php'>
+					<button>Login</button>
+				</a>
+				<?php
+				return;
+			}
+			$pid = $_SESSION['personid'];
             echo "<form name='submit1' method='POST' action='subscribeModule.php'>";
-            $pid = 1; //grab it from jimmy's stuff
-           	              
            	                
             $rows = get_sensors($conn);
             if ($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -157,7 +166,7 @@
             }
     
             
-            echo "<table border='1'>";
+            echo "<table border='1' class='table table-hover'>";
             echo "<tr><td>Subscribed</td><td>SENSOR_ID</td><td>LOCATION</td></tr>";
             foreach($rows as $row){
                 if(is_subscribed($conn,$row['SENSOR_ID'],$pid)){
