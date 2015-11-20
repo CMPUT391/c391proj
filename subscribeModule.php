@@ -130,10 +130,21 @@
 
 	    include ("PHPconnectionDB.php");        
 	    //establish connection
-            $conn=connect();
+		session_start();
+		if ($_SESSION['status'] != 's') {?>
+			Not a valid scientist, Please log in again. 
+			<a href = 'LogoutModule.php'>
+				<button>Login</button>
+			</a>
+		<?php
+			return;
+		}
+            
             echo "<form name='submit1' method='POST' action='subscribeModule.php'>";
-            $pid = 1; //grab it from jimmy's stuff
-           	              
+
+		
+		$conn=connect();
+            $pid = $_SESSION['personid']; //grab it from jimmy's stuff
            	                
             $rows = get_sensors($conn);
             if ($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -168,6 +179,10 @@
             echo "</form>";
 	
 	    ?>
+
+		<a href ='MainPage.php'>
+			<button>Return</button>
+		</a>
     </body>
 </html>
 
