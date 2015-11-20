@@ -62,17 +62,19 @@ include("PHPconnectionDB.php");
 							$personid = $item;
 						}
 					}
+					echo '<br/>';
+					echo $username. "pw is". $password;
 					session_start();
 					$_SESSION['status'] = $status;
 					$_SESSION['personid'] = $personid;
 					$_SESSION['username'] = $username;
 					$_SESSION['password'] = $password;
 					session_commit();
-					echo '<br /><a href="MainPage.php">MainPage</a>';
+					//echo '<br /><a href="MainPage.php">MainPage</a>';
 					// Free the statement identifier when closing the connection
 					oci_free_statement($stid);
 					oci_close($conn);
-					header('Location: MainPage.php');
+					//header('Location: MainPage.php');
 				} else {
 					echo "Unsuccessful Login";
 					// Free the statement identifier when closing the connection

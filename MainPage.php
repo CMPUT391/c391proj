@@ -18,12 +18,16 @@
 		<a href ='LogoutModule.php'>
 			<button>Logout</button>
 		</a> 
+
+		<a href ='ChangePW.html'>
+			<button>Change Password</button>
+		</a> 		
 	
-		<a href="sensorModule.php">
+		<a href="sensorModule.html">
 			<button>Go to Sensor module</button>
 		</a>
 
-		<a href="userModule.php">
+		<a href="userModule.html">
 			<button>Go to User module</button>
 		</a>
 
@@ -37,6 +41,18 @@
 		?>
 		<a href ='LogoutModule.php'>
 			<button>Logout</button>
+		</a>
+
+		<a href ='ChangePW.html'>
+			<button>Change Password</button>
+		</a> 		
+	
+		<a href="sensorModule.html">
+			<button>Go to Sensor module</button>
+		</a>
+
+		<a href="userModule.html">
+			<button>Go to User module</button>
 		</a>
 		
 		<a href="subscribeModule.php">
@@ -54,9 +70,25 @@
 		<a href ='LogoutModule.php'>
 			<button>Logout</button>
 		</a>
+	
+		<a href ='ChangePW.html'>
+			<button>Change Password</button>
+		</a> 		
+
+		<a href="sensorModule.html">
+			<button>Go to Sensor module</button>
+		</a>
+
+		<a href="userModule.html">
+			<button>Go to User module</button>
+		</a>
 
 		<a href="subscribeModule.php">
 			<button>Go to subscribe module</button>
+		</a>
+
+		<a href="UploadModule.html">
+			<button>Go to upload module</button>
 		</a>
 
 		<?php
