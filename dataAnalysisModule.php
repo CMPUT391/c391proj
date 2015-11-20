@@ -6,6 +6,7 @@
 </head>
  
 <body>
+    <div class='container'>
 	<?php
 		include ("PHPconnectionDB.php");
         $conn=connect();
@@ -363,7 +364,7 @@
  
          
  
- 
+</div> 
 </body>
  
 </html>

@@ -1,5 +1,11 @@
 <html>
+	<head>
+	<title>Subscribe Module</title>
+	<link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css">
+	</head>
     <body>
+    	<div class='container'>
+    		<h1> Data Analysis Module </h1>
         <?php
 
         
@@ -130,21 +136,10 @@
 
 	    include ("PHPconnectionDB.php");        
 	    //establish connection
-		session_start();
-		if ($_SESSION['status'] != 's') {?>
-			Not a valid scientist, Please log in again. 
-			<a href = 'LogoutModule.php'>
-				<button>Login</button>
-			</a>
-		<?php
-			return;
-		}
-            
+            $conn=connect();
             echo "<form name='submit1' method='POST' action='subscribeModule.php'>";
-
-		
-		$conn=connect();
-            $pid = $_SESSION['personid']; //grab it from jimmy's stuff
+            $pid = 1; //grab it from jimmy's stuff
+           	              
            	                
             $rows = get_sensors($conn);
             if ($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -175,14 +170,12 @@
             }
             echo "</table>";
             oci_close($conn);
-            echo "<input type='submit' name='submit' value='submit'>";
+            echo "<br>";
+            echo "<input type='submit' class='btn btn-primary' name='submit' value='submit'>";
             echo "</form>";
 	
 	    ?>
-
-		<a href ='MainPage.php'>
-			<button>Return</button>
-		</a>
+	</div>
     </body>
 </html>
 
