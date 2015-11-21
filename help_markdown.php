@@ -28,10 +28,9 @@ $markdown = <<<content
 
 ---
 
-1. Do this
-2. Do that
-3. Also do this
-4. Done
+1. Download and unzip all the required files. (e.g. from project github page)
+2. Run the setup.sql on sqlplus by typing "@setup.sql"
+3. Someone finish this....?
 
 [Go Back](#table_of_contents)
 
@@ -44,14 +43,23 @@ $markdown = <<<content
 ##### Login Module
 ---
 [Go Back](#table_of_contents)
+
+
+
 <a name="module_sensor"></a>
 ##### Sensor Management module
 ---
 [Go Back](#table_of_contents)
+
+
+
 <a name="module_user"></a>
 ##### User Management module
 ---
 [Go Back](#table_of_contents)
+
+
+
 <a name="module_subscribe"></a>
 ##### Subscribe Module
 ---
@@ -60,10 +68,13 @@ Previously subscribed sensors will be checked beforehand.
 
 [Go Back](#table_of_contents)
 
+
+
 <a name="module_upload"></a>
 ##### Uploading Module
 ---
 [Go Back](#table_of_contents)
+
 
 
 <a name="module_search"></a>
@@ -71,10 +82,24 @@ Previously subscribed sensors will be checked beforehand.
 ---
 [Go Back](#table_of_contents)
 
+
+
+
 <a name="module_analysis"></a>
 ##### Data Analysis Module
 ---
+While signed in, enter the year, query time window and the sensor from the dropdown menu and press submit.  
+The year accepts values between the year 1900 to 2099.  
+Time window dropdown menu contains the time window options. (yearly,quarterly,monthly,weekly,daily)  
+The sensor dropdown menu contains all currently subscribed sensors.  
+After submitting, the page will display all records that match the query.
+The user can choose to roll up or drill down by choosing a different time window option.
+
+
 [Go Back](#table_of_contents)
+
+
+
 
 <a name="license"></a>
 ## License
