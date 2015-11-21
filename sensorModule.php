@@ -187,8 +187,7 @@
 					<option disabled selected> --- Select a type --- </option>
 					<option value="a">Audio (a) </option>
 					<option value="i">Image (i) </option>
-					<option value="t">Temperature (t) </option>
-					<option value="o">Other(o) </option>
+					<option value="s">Scalar (s) </option>
 				</select> <br>
 			<label for="sensor_description">Description</label><br>
 			<input type='text' name='sensor_description' class='form-control' placeholder='Sensor Description' maxlength="128"> <br>

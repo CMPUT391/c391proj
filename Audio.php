@@ -30,7 +30,8 @@
 			$target = $target . basename($fileName);
 
 			// Allow certain file formats
-			if($fileType != "audio/x-wav") {
+			echo $fileType;
+			if($fileType != "audio/x-wav" || $fileType != 'audio/wav') {
 			    echo "Only wav allowed.";
 				?>
 				<a href ='UploadModule.html'>

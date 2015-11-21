@@ -57,9 +57,9 @@
 			$email = $_POST['email'];
 			$phone_number = $_POST['phone_number'];
 
-			$sql = 'INSERT INTO persons VALUES (person_id.nextval, \''.$first_name.'\', \''.$last_name.'\', \''.$address.'\', \''.$email.'\', \''.$phone_number.'\')';
-			// echo $sql.'<br>';
-			//Prepare sql using conn and returns the statement identifier
+			// check if email is already in the database
+			$sql = 'SELECT * FROM persons WHERE email = \''.$email.'\'';
+						//Prepare sql using conn and returns the statement identifier
 			$stid = oci_parse($conn, $sql);
 			//Execute a statement returned from oci_parse()
 			$res = oci_execute($stid);
@@ -68,13 +68,33 @@
 				$err = oci_error($stid); 
 				echo htmlentities($err['message']);
 			}
-			else{
-				echo '<ul class="list-group">
-						<li class="list-group-item list-group-item-success">Person added! <br>
-						First Name: '.$first_name.'<br>Last Name: '.$last_name.'<br>Address: '.$address.'<br>Email: '.$email.'<br>Phone Number: '.$phone_number.'</li>
-					 </ul>';
-			}
 
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+			
+			if (!empty($results)) {
+				echo '<ul class="list-group">
+						<li class="list-group-item list-group-item-danger">The email: '.$email.' already exists in the database.</li>
+					  </ul><br>';
+			}
+			else {
+				$sql = 'INSERT INTO persons VALUES (person_id.nextval, \''.$first_name.'\', \''.$last_name.'\', \''.$address.'\', \''.$email.'\', \''.$phone_number.'\')';
+				// echo $sql.'<br>';
+				//Prepare sql using conn and returns the statement identifier
+				$stid = oci_parse($conn, $sql);
+				//Execute a statement returned from oci_parse()
+				$res = oci_execute($stid);
+				//if error, retrieve the error using the oci_error() function & output an error message
+				if (!$res) {
+					$err = oci_error($stid); 
+					echo htmlentities($err['message']);
+				}
+				else{
+					echo '<ul class="list-group">
+							<li class="list-group-item list-group-item-success">Person added! <br>
+							First Name: '.$first_name.'<br>Last Name: '.$last_name.'<br>Address: '.$address.'<br>Email: '.$email.'<br>Phone Number: '.$phone_number.'</li>
+						 </ul>';
+				}
+			}
 			// Free the statement identifier when closing the connection
 			oci_free_statement($stid);
 
@@ -433,7 +453,7 @@
 			$password = $_POST['password'];
 			$role = $_POST['role'];
 			$person_id = $_POST['person_id'];
-			$date_registered = date('Y-m-d H:i:s',time());
+			$date_registered = date('d-m-Y H:i:s',time());
 
 			$continueFlag = true;
 			$exitFlag = false;
@@ -502,8 +522,7 @@
 						$exitFlag = true;
 					}
 					else {
-						$date = date('Y-m-d H:i:s',time());;
-						$sql = 'INSERT INTO users VALUES (\''.$username.'\', \''.$password.'\', \''.$role.'\', '.(int)$person_id.', to_date(\''.$date.'\', \'yy-mm-dd hh24:mi:ss\'))';
+						$sql = 'INSERT INTO users VALUES (\''.$username.'\', \''.$password.'\', \''.$role.'\', '.(int)$person_id.', to_date(\''.$date_registered.'\', \'dd-mm-yyyy hh24:mi:ss\'))';
 						// echo $sql.'<br>';
 						//Prepare sql using conn and returns the statement identifier
 						$stid = oci_parse($conn, $sql);

@@ -55,9 +55,6 @@
 			// }
 			// $row = oci_fetch_array($stid, OCI_ASSOC);
 			// $personID = $row['PERSON_ID'];				// personID of the current user
-			echo 'PersonID ';
-			echo $personID;
-			echo '<br><br>';
 
 			// // Find all sensorID's the current user is subscribed to & put it in a view called subscribedSensors
 			// $sql = 'CREATE VIEW subscribedSensors AS SELECT s.sensor FROM subscriptions s, users u WHERE u.user_name = \''.$user_name.'\' AND u.person_id = s.person_id';
@@ -78,7 +75,7 @@
 
 			// images
 			$subscribedSensorsImages = 'i.sensor_id = s.sensor_id';// AND - NEED
-			$imageDateRange = 'i.date_created BETWEEN to_date(\''.$startDate.'\', \'yy-mm-dd\') AND to_date(\''.$endDate.'\', \'yy-mm-dd\')';	// AND - MANDATORY
+			// $imageDateRange = 'i.date_created BETWEEN TO_CHAR(to_date(\''.$startDate.'\', \'yy-mm-dd\'), AND to_date(\''.$endDate.'\', \'yy-mm-dd\')';	// AND - MANDATORY
 
 			// sensors
 			$sensorTypeSearch = 's.sensor_type = \''.$sensorType.'\'';							// AND - IF SENSOR TYPE IS GIVEN
@@ -118,7 +115,7 @@
 				$count = count($keywordsArrayTemp);
 				for ($i = 0; $i < $count; $i++) {
 					if (strlen(trim($keywordsArrayTemp[$i])) > 0) {
-						array_push($keywordsArray, trim($keywordsArrayTemp[$i]));
+						array_push($keywordsArray, strtolower(trim($keywordsArrayTemp[$i])));
 					}
 				}
 				$count = count($keywordsArray);
@@ -137,15 +134,15 @@
 
 				if ($count > 0) {
 					$sql = $sql." AND (";
-					$sql = $sql.' i.description LIKE \'%'.$keywordsArray[0].'%\'';
-					$sql = $sql.' OR s.description LIKE \'%'.$keywordsArray[0].'%\'';
+					$sql = $sql.' lower(i.description) LIKE \'%'.$keywordsArray[0].'%\'';
+					$sql = $sql.' OR lower(s.description) LIKE \'%'.$keywordsArray[0].'%\'';
 					if (count($keywordsArray) == 1) {
 						$sql = $sql.' )';
 					}
 					else {
 						for ($i = 1; $i < $count; $i++) {
-							$sql = $sql.' OR i.description LIKE \'%'.$keywordsArray[$i].'%\'';
-							$sql = $sql.' OR s.description LIKE \'%'.$keywordsArray[$i].'%\'';
+							$sql = $sql.' OR lower(i.description) LIKE \'%'.$keywordsArray[$i].'%\'';
+							$sql = $sql.' OR lower(s.description) LIKE \'%'.$keywordsArray[$i].'%\'';
 						}
 						$sql = $sql.")";
 					}
@@ -157,7 +154,6 @@
 
 			// Get all IMAGES satisfying the search query
 			echo '<br><br><br>'.$sql.'<br><br><br>';
-
 			$stid = oci_parse($conn, $sql);
 			$res = oci_execute($stid);
 			if (!$res) {
@@ -167,40 +163,50 @@
 
 			echo '<h3> Images </h3>';
 			echo '<div class="container">';
-			$i = 0;
-			// Display all image results
-			while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
-				$i = $i + 1;
-				// still need to do download full size image button action
-				echo '
-				<div class="card col-md-3" style="max-width:30rem; padding-bottom: 45px;">
-					<img class="card-img-top img-thumbnail" src=\'.$row[
-					recoreded_data"].\' alt="Card image cap">
-					<table class="table">
-						<tbody>
-							<tr>
-							<td>ImageID: '.$row["IMAGE_ID"].'</td>
-							</tr>
-							<tr>
-							<td>SensorID: '.$row["SENSOR_ID"].'</td>
-							</tr>
-							<tr>
-							<td>Description: '.$row["DESCRIPTION"].'</td>
-							</tr>
-							<tr>
-							<td>Date Created: '.$row["DATE_CREATED"].'</td>
-							</tr>
-						</tbody>
-					</table>
-					<div class="card-block">
-						<a href="#" class="btn btn-primary">Download</a>
-					</div>
-				</div>
-				';
-			}
 
-			if (!$i) {
+			$rows = array();
+	        while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
+		        array_push($rows,$row);
+	        }
+
+
+	        if (empty($rows)) {
 				echo '<p> No matching images </p>';
+			} else {
+				// Display all image results
+				foreach($rows as $row) {
+					// still need to do download full size image button action
+				    $sImage = "data:jpg" . ";base64," . base64_encode($row['RECOREDED_DATA']->load());
+				    // echo $sImage;
+				    // echo '<img src="' . $sImage . '" alt="Your Image" />';
+
+					file_put_contents('/tmp/image.png', $row['RECOREDED_DATA']->load());
+
+					echo '
+					<div class="card col-md-3" style="max-width:30rem; padding-bottom: 45px;">
+						<img class="card-img-top img-thumbnail" src=\''.$sImage.'\' alt="Card image cap" id=\''.$row["IMAGE_ID"].'\'>
+						<table class="table">
+							<tbody>
+								<tr>
+								<td>ImageID: '.$row["IMAGE_ID"].'</td>
+								</tr>
+								<tr>
+								<td>SensorID: '.$row["SENSOR_ID"].'</td>
+								</tr>
+								<tr>
+								<td>Description: '.$row["DESCRIPTION"].'</td>
+								</tr>
+								<tr>
+								<td>Date Created: '.$row["DATE_CREATED"].'</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="card-block">
+							<a download="image.jpg" href=\''.$sImage.'\' class="btn btn-primary">Download</a>
+						</div>
+					</div>
+					';
+				}
 			}
 
 			echo '</div>';
