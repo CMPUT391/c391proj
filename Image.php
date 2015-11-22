@@ -116,12 +116,12 @@
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
-			$date = date('d-m-y h:m:s',time());;
+			$date = date('d-m-Y h:m:s',time());;
 
 			$lob = oci_new_descriptor($conn, OCI_D_LOB);
 			$thumblob = oci_new_descriptor($conn, OCI_D_LOB);
 
-			$stmt = oci_parse($conn, "INSERT INTO images(image_id, sensor_id, date_created, description, thumbnail, recoreded_data) VALUES ('$image_id', '$sensor_id', to_date('$date', 'dd-mm-yyyy hh24:mi:ss'), '$description', empty_blob(), empty_blob()) returning thumbnail, recoreded_data into :thumbnail, :recoreded_data");
+			$stmt = oci_parse($conn, "INSERT INTO images(image_id, sensor_id, date_created, description, thumbnail, recoreded_data) VALUES ('$image_id', '$sensor_id', to_date('$date', 'dd-mm-YYYY hh24:mi:ss'), '$description', empty_blob(), empty_blob()) returning thumbnail, recoreded_data into :thumbnail, :recoreded_data");
 			
 			oci_bind_by_name($stmt, ':thumbnail', $thumblob, -1, OCI_B_BLOB);
 			oci_bind_by_name($stmt, ':recoreded_data', $lob, -1, OCI_B_BLOB);

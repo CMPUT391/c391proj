@@ -31,7 +31,7 @@
 
 			// Allow certain file formats
 			echo $fileType;
-			if($fileType != "audio/x-wav" || $fileType != 'audio/wav') {
+			if($fileType != "audio/x-wav" && $fileType != 'audio/wav') {
 			    echo "Only wav allowed.";
 				?>
 				<a href ='UploadModule.html'>
@@ -92,10 +92,10 @@
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
-			$date = date('d-m-y h:m:s',time());;
+			$date = date('d-m-Y h:m:s',time());;
 			
 			$lob = oci_new_descriptor($conn, OCI_D_LOB);
-			$stmt = oci_parse($conn, "INSERT INTO audio_recordings(recording_id, sensor_id, date_created, description, recorded_data) VALUES ('$recording_id', '$sensor_id', to_date('$date', 'dd-mm-yyyy hh24:mi:ss'), '$description', empty_blob()) returning recorded_data into :recorded_data");
+			$stmt = oci_parse($conn, "INSERT INTO audio_recordings(recording_id, sensor_id, date_created, length, description, recorded_data) VALUES ('$recording_id', '$sensor_id', to_date('$date', 'dd-mm-YYYY hh24:mi:ss'), '$length', '$description', empty_blob()) returning recorded_data into :recorded_data");
 			
 			oci_bind_by_name($stmt, ':recorded_data', $lob, -1, OCI_B_BLOB);
 			oci_execute($stmt, OCI_NO_AUTO_COMMIT);

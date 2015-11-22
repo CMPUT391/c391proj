@@ -44,8 +44,7 @@
 					<option disabled selected> --- Select a type --- </option>
 					<option value="a">Audio (a) </option>
 					<option value="i">Image (i) </option>
-					<option value="t">Temperature (t) </option>
-					<option value="o">Other(o) </option>
+					<option value="s">Scalar (s) </option>
 				</select> <br>
 		<br>
 			<label for="sensorLocation">Sensor Location</label>

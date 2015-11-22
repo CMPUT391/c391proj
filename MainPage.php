@@ -23,17 +23,14 @@
 			<button>Change Password</button>
 		</a> 		
 	
-		<a href="sensorModule.html">
+		<a href="sensorModule.php">
 			<button>Go to Sensor module</button>
 		</a>
 
-		<a href="userModule.html">
+		<a href="userModule.php">
 			<button>Go to User module</button>
 		</a>
 
-		<a href="subscribeModule.php">
-			<button>Go to subscribe module</button>
-		</a>
 
 		<?php
 		} else if ($_SESSION['status'] == 's') {
@@ -47,20 +44,16 @@
 			<button>Change Password</button>
 		</a> 		
 	
-		<a href="sensorModule.html">
-			<button>Go to Sensor module</button>
-		</a>
-
-		<a href="userModule.html">
-			<button>Go to User module</button>
-		</a>
-		
 		<a href="subscribeModule.php">
 			<button>Go to subscribe module</button>
 		</a>
 
-		<a href="searchModule.html">
+		<a href="searchModule1.php">
 			<button>Go to Search module</button>
+		</a>
+
+		<a href="dataAnalysisModule.php">
+			<button>Go to Data Analysis module</button>
 		</a>
 
 		<?php	
@@ -74,18 +67,6 @@
 		<a href ='ChangePW.html'>
 			<button>Change Password</button>
 		</a> 		
-
-		<a href="sensorModule.html">
-			<button>Go to Sensor module</button>
-		</a>
-
-		<a href="userModule.html">
-			<button>Go to User module</button>
-		</a>
-
-		<a href="subscribeModule.php">
-			<button>Go to subscribe module</button>
-		</a>
 
 		<a href="UploadModule.html">
 			<button>Go to upload module</button>
