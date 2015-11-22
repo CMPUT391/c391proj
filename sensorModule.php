@@ -39,7 +39,6 @@
 	<br>
 		<?php 
 		include ("PHPconnectionDB.php");
-	   	include ("generateID.php");
 
 		//establish connection
 		$conn=connect();

@@ -49,6 +49,10 @@ $markdown = <<<content
 <a name="module_sensor"></a>
 ##### Sensor Management module
 ---
+While signed in as an administrator, you can view the table of all sensors in the databse with their associated information.
+To create a sensor, enter the sensor location select a sensor type from the dropdown menu & enter a description & press add sensor.
+To remove a sensor, simply enter the sensor id of the sensor you would like to remove & press remove.
+
 [Go Back](#table_of_contents)
 
 
@@ -56,6 +60,16 @@ $markdown = <<<content
 <a name="module_user"></a>
 ##### User Management module
 ---
+While signed in as an administrator, you can view the table of all persons in the database with their corresponding information.
+To add a new person, fill in all the fields presented and click add new person.
+To update a person, enter the person id of the person that you want to update, the fill any or all of the fields below that you want to update, leaving the rest blank & press update person.
+To remove a person, simply enter the id of the person you would like to remove.
+
+While signed in as an administrator, you can view the table of all users in the database with their associated information.
+To create a new user account, simply fill in all the fields under the create user account heading & press create user.
+To remove a user account, simply enter the username you want to remove & press remove.
+To update a user account, enter the username of the user you want to update then fill in any or all of the fields below it, leaving the rest blank and press update user.
+
 [Go Back](#table_of_contents)
 
 
@@ -80,6 +94,15 @@ Previously subscribed sensors will be checked beforehand.
 <a name="module_search"></a>
 ##### Search Module
 ---
+While signed in as a scientist, fill in the optional fields by entering keywords separated by a comma, selecting a sensor type, and/or specifying a sensor location as desired. 
+Then fill in the mandatory start & end dates to query for and click submit.
+The sensor type dropdown menu contains the 3 choices of sensor types : images, audio & scalar.
+After submitting, the page will display all records that match the query and it's corresponding fields associated with the record.
+Any images or audio recordings with descriptions containing any of the keywords will be displayed as well as any images, audio recordings and scalar data that correspond to a sensor that contains the keywords in its description will also be displayed.
+For images, the user can choose to download the full sized image by clicking the download button for the corresponding image.
+For audio recordings, the user can choose to download the audio file by clicking the download button for the corresponding audio recording.
+For scalar data, the user can choose to download the record as a csv file by clicking the download button for the corresponding scalar data.
+
 [Go Back](#table_of_contents)
 
 
