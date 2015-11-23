@@ -42,6 +42,10 @@ $markdown = <<<content
 <a name="module_login"></a>
 ##### Login Module
 ---
+The user will have two text fields they must fill out. The first being an username and the second a password. The user must input 
+a correct username and password which exists within the database. Depending on the type of user that logs in, he/she will be given access 
+to different modules on the main page. 
+
 [Go Back](#table_of_contents)
 
 
@@ -87,6 +91,11 @@ Previously subscribed sensors will be checked beforehand.
 <a name="module_upload"></a>
 ##### Uploading Module
 ---
+While signed in as a data curator, fill in the fields for either uploading images, audio recordings or csv files. 
+For images, the user must choose an image to upload from some directory in jpg form, enter a valid sensor id, a date, and description.
+For audio, the user must choose an audio file to upload in wav form, a valid sensor id, a date, the length of the audio file, and a description.
+For csv files, the user must upload a csv file of format: sensor id, date, value. 
+
 [Go Back](#table_of_contents)
 
 
