@@ -116,13 +116,27 @@
 			} else {
 				// Display all image results
 				foreach($rows as $row) {
-				    $image = "data:image/jpg" . ";base64," . base64_encode($row['RECOREDED_DATA']->load());
+				    $image = "data:image/jpg" . ";base64," . base64_encode($row['RECOREDED_DATA']->load());		
+					$Img = imagecreatefromstring($row['RECOREDED_DATA']->load());
+					$oldWidth = imagesx($Img);
+					$oldHeight = imagesy($Img);
+
+					$newWidth = 100;
+					$newHeight = 100;
+					$thumb = ImageCreateTrueColor($newWidth, $newHeight);
+			ImageCopyResampled($thumb, $Img, 0, 0, 0, 0, $newWidth, $newHeight, $oldWidth, $oldHeight);
+
+					ob_start();
+					imagejpeg($thumb);	
+					$contents = ob_get_contents();
+					ob_end_clean();
+					$thumbnail = "data:image/jpg" . ";base64," .base64_encode($contents);
 
 					file_put_contents('/tmp/image.png', $row['RECOREDED_DATA']->load());
 
 					echo '
 					<div class="card col-md-3" style="max-width:30rem; padding-bottom: 45px;">
-						<img class="card-img-top img-thumbnail" src=\''.$image.'\' alt="Card image cap" id=\''.$row["IMAGE_ID"].'\'>
+						<img class="card-img-top img-thumbnail" src=\''.$thumbnail.'\' alt="Card image cap" id=\''.$row["IMAGE_ID"].'\'>
 						<table class="table">
 							<tbody>
 								<tr>
@@ -360,7 +374,7 @@
 
 		<br><br>
 
-		<button><a href="searchModule1.php"> Go Back </a></button>
+		<a href="searchModule1.php"><button> Go Back </button></a>
 	
 	</div>
 

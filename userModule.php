@@ -26,12 +26,12 @@
 			echo '<ul class="list-group">
 					<li class="list-group-item list-group-item-danger">Access Denied. This page is only accessible by admins.</li>
 				 </ul> <br>';
-			echo '<button class="btn btn-default" name="homeBtn"> <a href="MainPage.php"> Home </a></button>';
+			echo '<a href="MainPage.php"><button class="btn btn-default" name="homeBtn"> Home </button></a>';
 		}
 		else {
 	?>
 
-	<button class='btn btn-default' name='homeBtn'> <a href="MainPage.php"> Home </a></button>
+	<a href="MainPage.php"><button class='btn btn-default' name='homeBtn'> Home </button></a>
 
 	<h1> User Management </h1>
 
