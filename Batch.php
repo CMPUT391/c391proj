@@ -41,7 +41,7 @@
 			if (($handle = fopen($csv_file, "r")) !== FALSE) {
 				while (($data = fgetcsv($handle, 1000, $separator)) !== FALSE) {
 					list($sensor_id, $date, $value) = $data;
-					$import_queries[] = 'INSERT INTO scalar_data VALUES (\''.$new_id.'\', \''.$sensor_id.'\', to_date(\''.$date.'\', \'dd-mm-yyyy hh24:mi:ss\'), \''.$value.'\')';
+					$import_queries[] = 'INSERT INTO scalar_data VALUES (\''.$new_id.'\', \''.$sensor_id.'\', to_date(\''.$date.'\', \'dd/mm/yyyy hh24:mi:ss\'), \''.$value.'\')';
 					$new_id++; // update for new unique id
 				}
 				fclose($handle);

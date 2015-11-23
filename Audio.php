@@ -95,7 +95,7 @@
 			$date = $_POST['createdate'];
 			
 			$lob = oci_new_descriptor($conn, OCI_D_LOB);
-			$stmt = oci_parse($conn, "INSERT INTO audio_recordings(recording_id, sensor_id, date_created, length, description, recorded_data) VALUES ('$recording_id', '$sensor_id', to_date('$date', 'dd-mm-YYYY hh24:mi:ss'), '$length', '$description', empty_blob()) returning recorded_data into :recorded_data");
+			$stmt = oci_parse($conn, "INSERT INTO audio_recordings(recording_id, sensor_id, date_created, length, description, recorded_data) VALUES ('$recording_id', '$sensor_id', to_date('$date', 'dd/mm/YYYY hh24:mi:ss'), '$length', '$description', empty_blob()) returning recorded_data into :recorded_data");
 			
 			oci_bind_by_name($stmt, ':recorded_data', $lob, -1, OCI_B_BLOB);
 			oci_execute($stmt, OCI_NO_AUTO_COMMIT);

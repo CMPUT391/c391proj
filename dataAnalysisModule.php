@@ -103,7 +103,7 @@
         </select> 
     </div>
     <button type="submit" class="btn btn-primary" id='searchBtn' name="searchBtn">Submit</button>
-</form>
+
  	<br>
     <?php
         $valid = false;
@@ -170,7 +170,7 @@
                     $first = false;
                 }
                 //echo "dfklgjldkgj";
-                echo "<tr><td>".$year."</td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
+                echo "<tr><td><input type='submit' name='drilldown_year' value=".$year." /></td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
                 //echo "MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
                 $value = $row;
             }
@@ -213,7 +213,7 @@
                 foreach($row as $key => $value){
                     echo $key;
                 }*/
-                echo "<tr><td>".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'Q'))"]."</td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
+                echo "<tr><td><input type='submit' name='drilldown_quarter' value=".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'Q'))"]." /></td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
                 //echo "Quarter:".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'Q'))"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
                 //echo "<br>";
                 $value = $row;
@@ -227,17 +227,27 @@
             return $value;
         }
 
-        function data_analysis_month($conn,$sensor_id,$year){
+        function data_analysis_month($conn,$sensor_id,$year,$quarter=0){
             $year = intval($year);
             //echo $year;
             //$year = intval($year);
 
             $value;
-            $sql = "SELECT MAX(value),MIN(value),AVG(value), EXTRACT(month FROM date_created) FROM scalar_data
-            WHERE $sensor_id=sensor_id AND
-            $year=EXTRACT(year FROM date_created)
-            GROUP BY EXTRACT(month FROM date_created)
-            ORDER BY EXTRACT(month FROM date_created)";
+
+            if($quarter == 0){
+                $sql = "SELECT MAX(value),MIN(value),AVG(value), EXTRACT(month FROM date_created) FROM scalar_data
+                WHERE $sensor_id=sensor_id AND
+                $year=EXTRACT(year FROM date_created)
+                GROUP BY EXTRACT(month FROM date_created)
+                ORDER BY EXTRACT(month FROM date_created)";
+            } else {
+                $sql = "SELECT MAX(value),MIN(value),AVG(value), EXTRACT(month FROM date_created) FROM scalar_data
+                WHERE $sensor_id=sensor_id AND
+                $year=EXTRACT(year FROM date_created) AND
+                $quarter=to_number(to_char(date_created,'Q'))
+                GROUP BY EXTRACT(month FROM date_created)
+                ORDER BY EXTRACT(month FROM date_created)";
+            }
             $stid = oci_parse($conn,$sql);
             $res = oci_execute($stid);
             $first = true;
@@ -257,7 +267,7 @@
                 foreach($row as $key => $value){
                     echo $key;
                 }*/
-                echo "<tr><td>".$row["EXTRACT(MONTHFROMDATE_CREATED)"]."</td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
+                echo "<tr><td><input type='submit' name='drilldown_month' value=".$row["EXTRACT(MONTHFROMDATE_CREATED)"]." /></td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
                 //echo "Month:".$row["EXTRACT(MONTHFROMDATE_CREATED)"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
                 //echo "<br>";
                 $value = $row;
@@ -271,17 +281,26 @@
             return $value;
         }
  		
-        function data_analysis_week($conn,$sensor_id,$year){
+        function data_analysis_week($conn,$sensor_id,$year,$month=0){
             $year = intval($year);
             //echo $year;
             //$year = intval($year);
             $first = true;
             $value;
-            $sql = "SELECT MAX(value),MIN(value),AVG(value), to_number(to_char(date_created,'WW')) FROM scalar_data
-            WHERE $sensor_id=sensor_id AND
-            $year=EXTRACT(year FROM date_created)
-            GROUP BY to_number(to_char(date_created,'WW'))
-            ORDER BY to_number(to_char(date_created,'WW'))";
+            if($month==0){
+                $sql = "SELECT MAX(value),MIN(value),AVG(value), to_number(to_char(date_created,'WW')) FROM scalar_data
+                WHERE $sensor_id=sensor_id AND
+                $year=EXTRACT(year FROM date_created)
+                GROUP BY to_number(to_char(date_created,'WW'))
+                ORDER BY to_number(to_char(date_created,'WW'))";
+            }else{
+                $sql = "SELECT MAX(value),MIN(value),AVG(value), to_number(to_char(date_created,'WW')) FROM scalar_data
+                WHERE $sensor_id=sensor_id AND
+                $year=EXTRACT(year FROM date_created) AND
+                $month=EXTRACT(month FROM date_created)
+                GROUP BY to_number(to_char(date_created,'WW'))
+                ORDER BY to_number(to_char(date_created,'WW'))"; 
+            }
             $stid = oci_parse($conn,$sql);
             $res = oci_execute($stid);
 
@@ -301,7 +320,7 @@
                 foreach($row as $key => $value){
                     echo $key;
                 }*/
-                echo "<tr><td>".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'WW'))"]."</td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
+                echo "<tr><td><input type='submit' name='drilldown_week' value=".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'WW'))"]." /></td><td>".$row["MAX(VALUE)"]."</td><td>".$row["MIN(VALUE)"]."</td><td>".$row["AVG(VALUE)"]."</td></tr>";
                 //echo "Week:".$row["TO_NUMBER(TO_CHAR(DATE_CREATED,'WW'))"]." MAX: ".$row["MAX(VALUE)"]." MIN: ".$row["MIN(VALUE)"]." AVG: ".$row["AVG(VALUE)"];
                 //echo "<br>";
                 $value = $row;
@@ -315,17 +334,26 @@
             return $value;
         }
 
-        function data_analysis_day($conn,$sensor_id,$year){
+        function data_analysis_day($conn,$sensor_id,$year,$week=0){
             $year = intval($year);
             //echo $year;
             //$year = intval($year);
             $first = true;
             $value;
-            $sql = "SELECT MAX(value),MIN(value),AVG(value), to_number(to_char(date_created,'DDD')) FROM scalar_data
-            WHERE $sensor_id=sensor_id AND
-            $year=EXTRACT(year FROM date_created)
-            GROUP BY to_number(to_char(date_created,'DDD'))
-            ORDER BY to_number(to_char(date_created,'DDD'))";
+            if ($week == 0){
+                $sql = "SELECT MAX(value),MIN(value),AVG(value), to_number(to_char(date_created,'DDD')) FROM scalar_data
+                WHERE $sensor_id=sensor_id AND
+                $year=EXTRACT(year FROM date_created)
+                GROUP BY to_number(to_char(date_created,'DDD'))
+                ORDER BY to_number(to_char(date_created,'DDD'))";
+            }else{
+                $sql = "SELECT MAX(value),MIN(value),AVG(value), to_number(to_char(date_created,'DDD')) FROM scalar_data
+                WHERE $sensor_id=sensor_id AND
+                $year=EXTRACT(year FROM date_created) AND 
+                $week=to_number(to_char(date_created,'WW'))
+                GROUP BY to_number(to_char(date_created,'DDD'))
+                ORDER BY to_number(to_char(date_created,'DDD'))";
+            }
             $stid = oci_parse($conn,$sql);
             $res = oci_execute($stid);
 
@@ -362,54 +390,68 @@
 
 
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
-            echo "<legend> Search Results </legend>";
+            echo "</br><legend> Search Results </legend>";
         	$valid = true;
-        	if($_POST['analysis_sid'] == NULL){
-        		echo "<p>Error: Please select a valid sensor.</p><br>";
-        		$valid = false;
-        	}
-        	if($_POST['analysis_range'] == NULL){
-        		echo "<p>Error: Please select a time window.</p><br>";
-        		$valid = false;
-        	}
-        	if($_POST['analysis_year'] == NULL){
-        		echo "<p>Error: Please select a valid year.</p><br>";
-        		$valid = false;
-        	}
-        	if($valid){
-                /*
-	            echo "<p>".$_POST['analysis_range']."</p>";
-	            echo "<p>".$_POST['analysis_year']."</p>";
-	            data_analysis_all($conn,$_POST['analysis_sid'],0);
-	            data_analysis_all($conn,$_POST['analysis_sid'],1);
-	            data_analysis_all($conn,$_POST['analysis_sid'],2);*/
-                echo "<br>";
-                if($_POST['analysis_range'] == 'y'){
-                    //echo "<p>Report for Year: ".$_POST['analysis_year']."</p><br>";
-                    data_analysis_year($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
-                }
-                if($_POST['analysis_range'] == 'q'){
-                    //echo "<p>Quarterly Report for Year: ".$_POST['analysis_year']."</p><br>";
-                    data_analysis_quarter($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
-                }
-                if($_POST['analysis_range'] == 'm'){
-                    //echo "<p>Monthly Report for Year: ".$_POST['analysis_year']."</p><br>";
-                    data_analysis_month($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
-                }
-                if($_POST['analysis_range'] == 'w'){
-                    //echo "<p>Weekly Report for Year: ".$_POST['analysis_year']."</p><br>";
-                    data_analysis_week($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
-                }
-                if($_POST['analysis_range'] == 'd'){
-                    //echo "<p>Daily Report for Year: ".$_POST['analysis_year']."</p><br>";
-                    data_analysis_day($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
-                }
-	        }
+            if($_POST['drilldown_year'] != NULL){
+                #echo "Do drilldown";
+                data_analysis_quarter($conn,$_POST['analysis_sid'],$_POST['drilldown_year']);
+            }elseif($_POST['drilldown_quarter'] != NULL){
+                #echo "Do drilldown quarter";
+                data_analysis_month($conn,$_POST['analysis_sid'],$_POST['analysis_year'],$_POST['drilldown_quarter']);
+            }elseif($_POST['drilldown_month'] != NULL){
+                #echo "Do drilldown_month";
+                data_analysis_week($conn,$_POST['analysis_sid'],$_POST['analysis_year'],$_POST['drilldown_month']);
+            }elseif($_POST['drilldown_week'] != NULL){
+                #echo "Do drilldown_week";
+                data_analysis_day($conn,$_POST['analysis_sid'],$_POST['analysis_year'],$_POST['drilldown_week']);
+            }else{
+            	if($_POST['analysis_sid'] == NULL){
+            		echo "<p>Error: Please select a valid sensor.</p><br>";
+            		$valid = false;
+            	}
+            	if($_POST['analysis_range'] == NULL){
+            		echo "<p>Error: Please select a time window.</p><br>";
+            		$valid = false;
+            	}
+            	if($_POST['analysis_year'] == NULL){
+            		echo "<p>Error: Please select a valid year.</p><br>";
+            		$valid = false;
+            	}
+            	if($valid){
+                    /*
+    	            echo "<p>".$_POST['analysis_range']."</p>";
+    	            echo "<p>".$_POST['analysis_year']."</p>";
+    	            data_analysis_all($conn,$_POST['analysis_sid'],0);
+    	            data_analysis_all($conn,$_POST['analysis_sid'],1);
+    	            data_analysis_all($conn,$_POST['analysis_sid'],2);*/
+                    echo "<br>";
+                    if($_POST['analysis_range'] == 'y'){
+                        //echo "<p>Report for Year: ".$_POST['analysis_year']."</p><br>";
+                        data_analysis_year($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
+                    }
+                    if($_POST['analysis_range'] == 'q'){
+                        //echo "<p>Quarterly Report for Year: ".$_POST['analysis_year']."</p><br>";
+                        data_analysis_quarter($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
+                    }
+                    if($_POST['analysis_range'] == 'm'){
+                        //echo "<p>Monthly Report for Year: ".$_POST['analysis_year']."</p><br>";
+                        data_analysis_month($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
+                    }
+                    if($_POST['analysis_range'] == 'w'){
+                        //echo "<p>Weekly Report for Year: ".$_POST['analysis_year']."</p><br>";
+                        data_analysis_week($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
+                    }
+                    if($_POST['analysis_range'] == 'd'){
+                        //echo "<p>Daily Report for Year: ".$_POST['analysis_year']."</p><br>";
+                        data_analysis_day($conn,$_POST['analysis_sid'],$_POST['analysis_year']);
+                    }
+    	        }
+            }
         }
     ?>
  
     <a href="MainPage.php" class="btn btn-primary">Back</a>
- 
+</form> 
 </div> 
 </body>
  
