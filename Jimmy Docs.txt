@@ -1,0 +1,40 @@
+Login Module
+The login module was used by having the user input an username and password into the text field of the
+loginModule.html page. Then in the LoginModule.php file we check to see if the fields are filled or not then
+we check to see if the username and password they entered exists in the database through our sql querie statments. Then we start a session to save the information of the currently logged in user. 
+After that we are redirected to our main page. In our php file for main page, we first start a session and 
+check to see that the user is the same as the one that had just logged in. Then we also get the status of the logged in user and depending on whether they are an admin, scientist, or data curator they will be displayed different options of what modules they can access. 
+Every type of user is allowed to logout and change their passwords. 
+
+The main sql queries used are:
+	SELECT * FROM users WHERE users.user_name = '$_POST[username]' and users.password = '$_POST[password]'
+	
+Change PW module
+This module allows users to change their passwords. The user has to enter their old password then their new one and confirm once again on their new password. The php file first checks to see if the user currently trying to access the change pw page is a user that has been logged in, this is done by sessions. Then it will check the fields of the passwords, to see if it is empty or if they new password has been incorrectly inputted. Once that is done we use our sql statement to change the user's password. 
+
+The main sql queries used are: 
+	UPDATE users SET password='$password1' WHERE user_name='$username' AND person_id=$personid
+
+Upload Module
+The upload module allows data curators to upload their data, which are images, audio files and csv files. Images are only accepted in jpg format, audio files are only accepted as wav files and csv files must be in format of sensor id, date, value. 
+
+Images:
+When uploading images, the user is given fields in which they must fill. The first is what image they want to upload and this is done through the html input file type form. Next is the sensor id of the said image they are going to upload. After that is the date, then the description. 
+Once that is done it will go to our Image.php file which will first use sessions to check that the user currently logged in is a data curator. Then it will get the information of the image that the user wants to upload. It will then check to see if it exceeds 64kb and return an error if it does, then it will check to see if it is in proper format (jpg) and returns an error if it isn't. This is done through the use of the file 'size' and file 'type'. Once it passes the checks, it will get ready to upload the information into the images table. First it will get a new unique id from images by using an sql statement which gets the max image id from images then it will continue on from that. Next it will start inputting the blob file into recorded data and thumbnail respectively. We upload this information by first have empty blobs in the sql statement, then we fill it up by using oci_new_descriptor, oci_bind_by_name and savefile. 
+
+The main sql queries used are:
+	SELECT MAX(image_id) FROM images
+	INSERT INTO images(image_id, sensor_id, date_created, description, thumbnail, recoreded_data) VALUES ('$image_id', '$sensor_id', to_date('$date', 'dd-mm-YYYY hh24:mi:ss'), '$description', empty_blob(), empty_blob()) returning thumbnail, recoreded_data into :thumbnail, :recoreded_data
+
+Audio:
+The audio php uploading file is similar to that of the image one. The user first fills in the fields of which are what audio file is to be uploaded, the sensor id, the date, length, and description. Then after the fields are filled, it will go to the audio.php file and run the code which will first check again through sessions to see if the currently logged in user is a valid user or not. Then it will see if an audio file has been uploaded or not. The next check after that is to see if it is a wav file or not. If it does not pass these checks, it will prompt the user to retry. Next it will get ready to upload the information into the database. This is done similarily to how we upload images, with first getting an unique audio id, then using an empty blob and oci_new_descriptor, oci_bind_by_name and savefile to upload the audio file.
+
+The main sql queries used are:
+	SELECT MAX(recording_id) FROM audio_recordings
+	INSERT INTO audio_recordings(recording_id, sensor_id, date_created, length, description, recorded_data) VALUES ('$recording_id', '$sensor_id', to_date('$date', 'dd-mm-YYYY hh24:mi:ss'), '$length', '$description', empty_blob()) returning recorded_data into :recorded_data
+
+CSV Files:
+What we upload to the database is a csv file of format sensor id, date, and value. These are all on one line separated by a newline and we can have multiple entries by seperating it with newlines. After a csv file is uploaded, in our php file we first check to see if the currently logged in user is a valid data curator. Then we check to see if the file uploaded is valid, i.e. has a size greater than 0 bytes. Once the checks pass, we then will use an array to store our sql statments that we will execute in a loop later in the code. First we will read from the csv file using fopen and fgetcsv which will then put the sensor id, date and value into a variable. We will then parse these variables into sql statements and then will put it into our array of sql queries. After reading the file is all done, we will then have a loop which will execute all the statements that have been stored in our array. 
+
+The main sql queries used are: 
+	INSERT INTO scalar_data VALUES ('$new_id', '$sensor_id', to_date('$date', 'dd-mm-yyyy hh24:mi:ss'), '$value')
