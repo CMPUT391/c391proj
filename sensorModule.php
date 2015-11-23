@@ -43,6 +43,67 @@
 		//establish connection
 		$conn=connect();
 
+		// Check if sensorID exists in the database
+		function validateSensor($sensor_id, $conn) {
+			$sql = 'SELECT * FROM sensors WHERE sensor_id='.$sensor_id;
+			// echo $sql.'<br>';
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+			
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+
+			return $results;
+		}
+
+		// remove all rows in subscriptions with this sensor id if necessary
+		function removeSubscriptionsFromSensorID($sensor_id, $conn) {
+			$sql = 'DELETE FROM subscriptions WHERE sensor_id = '.(int)$sensor_id;
+			// echo $sql.'<br>';
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+		}
+
+		// delete sensor
+		function removeSensor($sensor_id, $conn) {
+			$sql = 'DELETE FROM sensors WHERE ( sensor_id = '.(int)$sensor_id.')';
+			// echo $sql.'<br>';
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+			else{
+				echo '<ul class="list-group">
+					  	<li class="list-group-item list-group-item-success">Sensor deleted!</li>
+					  </ul>';
+			}
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+		}
+
 		// CREATE / ADD SENSOR
 		if(isset($_POST['createSensorBtn'])){        	
 			$location=$_POST['sensor_location'];            		
@@ -77,19 +138,7 @@
 			$sensorID = $_POST['sensor_id'];
 
 			// Check if sensorID is in the database
-			$sql = 'SELECT * FROM sensors WHERE sensor_id='.$sensorID;
-			// echo $sql.'<br>';
-			//Prepare sql using conn and returns the statement identifier
-			$stid = oci_parse($conn, $sql);
-			//Execute a statement returned from oci_parse()
-			$res=oci_execute($stid);
-			//if error, retrieve the error using the oci_error() function & output an error message
-			if (!$res) {
-				$err = oci_error($stid); 
-				echo htmlentities($err['message']);
-			}
-
-			$results = oci_fetch_array($stid, OCI_ASSOC);
+			$results = validateSensor($sensorID, $conn);
 			if (empty($results)) {
 				echo '<ul class="list-group">
 					 	<li class="list-group-item list-group-item-danger">SensorID : '.$sensorID.' does not exist in the database. </li>
@@ -97,39 +146,10 @@
 			} 
 
 			else {
-				// remove all rows in subscriptions with this sensor id if necessary
-				$sql = 'DELETE FROM subscriptions WHERE sensor_id = '.(int)$sensorID;
-				// echo $sql.'<br>';
-				//Prepare sql using conn and returns the statement identifier
-				$stid = oci_parse($conn, $sql);
-				//Execute a statement returned from oci_parse()
-				$res=oci_execute($stid);
-				//if error, retrieve the error using the oci_error() function & output an error message
-				if (!$res) {
-					$err = oci_error($stid); 
-					echo htmlentities($err['message']);
-				}
-
-				// delete sensor
-				$sql = 'DELETE FROM sensors WHERE ( sensor_id = '.(int)$sensorID.')';
-				// echo $sql.'<br>';
-				//Prepare sql using conn and returns the statement identifier
-				$stid = oci_parse($conn, $sql);
-				//Execute a statement returned from oci_parse()
-				$res=oci_execute($stid);
-				//if error, retrieve the error using the oci_error() function & output an error message
-				if (!$res) {
-					$err = oci_error($stid); 
-					echo htmlentities($err['message']);
-				}
-				else{
-					echo '<ul class="list-group">
-						  	<li class="list-group-item list-group-item-success">Sensor deleted!</li>
-						  </ul>';
-				}
+				removeSubscriptionsFromSensorID($sensorID, $conn);
+				removeSensor($sensorID, $conn);
 			}
-			// Free the statement identifier when closing the connection
-			oci_free_statement($stid);
+
 		}
 
 	    function get_all_sensors($conn){

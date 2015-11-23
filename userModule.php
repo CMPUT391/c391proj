@@ -13,13 +13,13 @@
 		session_start();
 		// $_SESSION['status'] is the data passed from Login Module which will contain the type of user 
 		// $_SESSION['personid'] is the person id of the user
-		// END SESSION WHEN LOGOUT
-		// echo $_SESSION['personid'];
-		if ($_SESSION['status'] != 'a' && $_SESSION['status'] != 'd' && $_SESSION['status'] != 's') { ?>
+		if ($_SESSION['status'] != 'a' && $_SESSION['status'] != 'd' && $_SESSION['status'] != 's') { 
+	?>
 			Please Log in
 			<a href = 'LoginModule.html'>
 				<button>Login</button>
 			</a>
+
 	<?php 
 		exit; }
 		else if ($_SESSION['status'] != 'a') {
@@ -39,7 +39,6 @@
 
         <?php 
 	   	include ("PHPconnectionDB.php");
-
 		//establish connection
 		$conn=connect();
 		?>
@@ -48,17 +47,33 @@
 		<br>
 
 		<?php
-		// CREATE / ADD PERSON
-		if(isset($_POST['addNewPersonBtn'])){        	
-			$first_name=$_POST['first_name'];            		
-			$last_name=$_POST['last_name'];
-			$address = $_POST['address'];
-			$email = $_POST['email'];
-			$phone_number = $_POST['phone_number'];
+		// Check if a valid/existing person_id was entered
+		function validatePersonID($person_id, $conn) {
+			$sql = 'SELECT * FROM persons WHERE person_id=\''.$person_id.'\'';
+			// echo $sql.'<br>';
 
-			// check if email is already in the database
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+
+			return $results;
+		}
+
+		// check if email is already in the database
+		function validateEmail($email, $conn) {
 			$sql = 'SELECT * FROM persons WHERE email = \''.$email.'\'';
-						//Prepare sql using conn and returns the statement identifier
+			//Prepare sql using conn and returns the statement identifier
 			$stid = oci_parse($conn, $sql);
 			//Execute a statement returned from oci_parse()
 			$res = oci_execute($stid);
@@ -69,7 +84,156 @@
 			}
 
 			$results = oci_fetch_array($stid, OCI_ASSOC);
+
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
 			
+			return $results;
+		}
+
+		// Check if person has any subscriptions & delete those rows
+		function removeSubscriptions($person_id, $conn) {
+			// check if person has any subscriptions
+			$sql = 'SELECT * FROM subscriptions WHERE person_id='.$person_id.'';
+			// echo $sql.'<br>';
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			// remove the subscriptions if necessary
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+			if (!empty($results)) {
+				$sql = 'DELETE FROM subscriptions WHERE ( person_id = '.(int)$person_id.')';
+				// echo $sql.'<br>';
+				//Prepare sql using conn and returns the statement identifier
+				$stid = oci_parse($conn, $sql);
+				//Execute a statement returned from oci_parse()
+				$res=oci_execute($stid);
+				//if error, retrieve the error using the oci_error() function & output an error message
+				if (!$res) {
+					$err = oci_error($stid); 
+					echo htmlentities($err['message']);
+				}
+			}
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+			
+		}
+
+		function removeUser($username, $conn) {
+			$sql = 'DELETE FROM users WHERE ( user_name =\''.$username.'\')';
+			// echo $sql.'<br>';
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+			else{
+				echo '<ul class="list-group">
+						<li class="list-group-item list-group-item-success">User: '.$username.' deleted! <br>
+						</li>
+					  </ul>';
+			}
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+		}
+
+		function removeUserFromPersonID($personID, $conn) {
+			// check if person has any user accounts associated with it
+			$sql = 'SELECT * FROM users WHERE person_id='.$personID.'';
+			// echo $sql.'<br>';
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			// remove the user accounts if necessary
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+			if (!empty($results)) {
+				$sql = 'DELETE FROM users WHERE ( person_id = '.(int)$personID.')';
+				// echo $sql.'<br>';
+				//Prepare sql using conn and returns the statement identifier
+				$stid = oci_parse($conn, $sql);
+				//Execute a statement returned from oci_parse()
+				$res=oci_execute($stid);
+				//if error, retrieve the error using the oci_error() function & output an error message
+				if (!$res) {
+					$err = oci_error($stid); 
+					echo htmlentities($err['message']);
+				}
+			}
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+		}
+
+		function removePerson($personID, $conn) {
+			$sql = 'DELETE FROM persons WHERE ( person_id = '.(int)$personID.')';
+			// echo $sql.'<br>';
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+			else{
+				echo '<ul class="list-group">
+						<li class="list-group-item list-group-item-success">Person ID : '.(int)$personID.' deleted.</li>
+					  </ul>';
+			}
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+		}
+
+		// Check if username is already in the database
+		function validateUsername($username, $conn) {
+			$sql = 'SELECT * FROM users WHERE user_name=\''.$username.'\'';
+			// echo $sq;.'<br>';
+
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			$results = oci_fetch_array($stid, OCI_ASSOC);
+			return $results;
+		}
+		?>
+
+
+		<?php
+		// CREATE / ADD PERSON
+		if(isset($_POST['addNewPersonBtn'])){        	
+			$first_name=$_POST['first_name'];            		
+			$last_name=$_POST['last_name'];
+			$address = $_POST['address'];
+			$email = $_POST['email'];
+			$phone_number = $_POST['phone_number'];
+
+			
+			$results = validateEmail($email, $conn);
 			if (!empty($results)) {
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-danger">The email: '.$email.' already exists in the database.</li>
@@ -110,32 +274,19 @@
 			$phone_number = $_POST['phone_number'];
 
 			$continueFlag = true;
-			$exitFlag = false;
+			$noQueryExecutedFlag = false;
 			// echo "Person ID: ".$personID.'<br>';
 			if (empty($personID)) {
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-danger">PersonID must be entered to update a person!</li>
 					  </ul><br>'; 
 				$continueFlag = false;
-				$exitFlag = true;
+				$noQueryExecutedFlag = true;
 			}
 
 			if($continueFlag) {
-				// Check if username is in the database
-				$sql = 'SELECT * FROM persons WHERE person_id ='.$personID.'';
-				// echo  $sql.'<br>';
-				//Prepare sql using conn and returns the statement identifier
-				$stid = oci_parse($conn, $sql);
-				//Execute a statement returned from oci_parse()
-				$res=oci_execute($stid);
-				//if error, retrieve the error using the oci_error() function & output an error message
-				if (!$res) {
-					$err = oci_error($stid); 
-					echo htmlentities($err['message']);
-				}
-
-				$results = oci_fetch_array($stid, OCI_ASSOC);
-				
+				// Check if existing personid is entered
+				$results = validatePersonID($personID, $conn);
 				if (empty($results)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-danger">PersonID: '.$personID.' does not exist in the database.</li>
@@ -143,7 +294,7 @@
 					$continueFlag = false;
 				}
 
-				if (empty($first_name) && empty($last_name) && empty($address) && empty($email) && empty($phone_number)) {
+				else if (empty($first_name) && empty($last_name) && empty($address) && empty($email) && empty($phone_number)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-info">Nothing to update!</li>
 						  </ul>';
@@ -193,11 +344,9 @@
 							<li class="list-group-item list-group-item-success">Person updated! <br>'.$updateStatus.'</li>
 						  </ul>';
 				}
-			}
-
-			if (!$exitFlag) {
 				// Free the statement identifier when closing the connection
 				oci_free_statement($stid);
+			
 			}
 
 		}
@@ -208,30 +357,16 @@
 			$personID = $_POST['person_id'];
 
 			$continueFlag = true;
-			$exitFlag = false;
 			// echo "Person ID: ".$personID.'<br>';
 			if (empty($personID)) {
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-info">No PersonID was entered!</li>
 					  </ul><br>'; 
 				$continueFlag = false;
-				$exitFlag = true;
 			}
 			else {
-				// Check if sensorID is in the database
-				$sql = 'SELECT * FROM persons WHERE person_id='.$personID.'';
-				// echo $sql.'<br>';
-				//Prepare sql using conn and returns the statement identifier
-				$stid = oci_parse($conn, $sql);
-				//Execute a statement returned from oci_parse()
-				$res=oci_execute($stid);
-				//if error, retrieve the error using the oci_error() function & output an error message
-				if (!$res) {
-					$err = oci_error($stid); 
-					echo htmlentities($err['message']);
-				}
-
-				$results = oci_fetch_array($stid, OCI_ASSOC);
+				// Check if existing person id is entered
+				$results = validatePersonID($personID, $conn);
 				if (empty($results)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-danger">PersonID : '.(int)$personID.' does not exist in the database.</li>
@@ -240,98 +375,10 @@
 				}
 
 				if ($continueFlag) {
-					// Check if person has any subscriptons & delete those rows
-					$sql = 'SELECT * FROM subscriptions WHERE person_id='.$personID.'';
-					// echo $sql.'<br>';
-					//Prepare sql using conn and returns the statement identifier
-					$stid = oci_parse($conn, $sql);
-					//Execute a statement returned from oci_parse()
-					$res=oci_execute($stid);
-					//if error, retrieve the error using the oci_error() function & output an error message
-					if (!$res) {
-						$err = oci_error($stid); 
-						echo htmlentities($err['message']);
-					}
-
-					$results = oci_fetch_array($stid, OCI_ASSOC);
-					if (!empty($results)) {
-						$sql = 'DELETE FROM subscriptions WHERE ( person_id = '.(int)$personID.')';
-
-						// echo $sql.'<br>';
-						//Prepare sql using conn and returns the statement identifier
-						$stid = oci_parse($conn, $sql);
-						//Execute a statement returned from oci_parse()
-						$res=oci_execute($stid);
-						//if error, retrieve the error using the oci_error() function & output an error message
-						if (!$res) {
-							$err = oci_error($stid); 
-							echo htmlentities($err['message']);
-						}
-						// else{
-						// 	echo '<ul class="list-group">
-						// 			<li class="list-group-item list-group-item-success">Subscriptions for person #'.$personID.' deleted. <br></li>
-						// 		  </ul>';
-						// }
-					}
-
-
-					// Check if person has any associated users & delete those rows
-					$sql = 'SELECT * FROM users WHERE person_id='.$personID.'';
-					// echo $sql.'<br>';
-
-					//Prepare sql using conn and returns the statement identifier
-					$stid = oci_parse($conn, $sql);
-					//Execute a statement returned from oci_parse()
-					$res=oci_execute($stid);
-					//if error, retrieve the error using the oci_error() function & output an error message
-					if (!$res) {
-						$err = oci_error($stid); 
-						echo htmlentities($err['message']);
-					}
-
-					$results = oci_fetch_array($stid, OCI_ASSOC);
-					if (!empty($results)) {
-						$sql = 'DELETE FROM users WHERE ( person_id = '.(int)$personID.')';
-
-						// echo $sql.'<br>';
-						//Prepare sql using conn and returns the statement identifier
-						$stid = oci_parse($conn, $sql);
-						//Execute a statement returned from oci_parse()
-						$res=oci_execute($stid);
-						//if error, retrieve the error using the oci_error() function & output an error message
-						if (!$res) {
-							$err = oci_error($stid); 
-							echo htmlentities($err['message']);
-						}
-						// else{
-						// 	echo '<ul class="list-group">
-						// 			<li class="list-group-item list-group-item-success">Users associated with person #'.$personID.' deleted.</li>
-						// 		  </ul>';
-						// }
-					}
-
-
-					// delete person
-					$sql = 'DELETE FROM persons WHERE ( person_id = '.(int)$personID.')';
-
-					// echo $sql.'<br>';
-					//Prepare sql using conn and returns the statement identifier
-					$stid = oci_parse($conn, $sql);
-					//Execute a statement returned from oci_parse()
-					$res=oci_execute($stid);
-					//if error, retrieve the error using the oci_error() function & output an error message
-					if (!$res) {
-						$err = oci_error($stid); 
-						echo htmlentities($err['message']);
-					}
-					else{
-						echo '<ul class="list-group">
-								<li class="list-group-item list-group-item-success">Person ID : '.(int)$personID.' deleted.</li>
-							  </ul>';
-					}
+					removeSubscriptions($personID, $conn);
+					removeUserFromPersonID($personID, $conn);
+					removePerson($personID, $conn);
 				}
-				// Free the statement identifier when closing the connection
-				oci_free_statement($stid);
 			}
 		}
 
@@ -477,21 +524,7 @@
 			}
 
 			if ($continueFlag) {
-				// Check if username is already in the database
-				$sql = 'SELECT * FROM users WHERE user_name=\''.$username.'\'';
-				// echo $sq;.'<br>';
-
-				//Prepare sql using conn and returns the statement identifier
-				$stid = oci_parse($conn, $sql);
-				//Execute a statement returned from oci_parse()
-				$res=oci_execute($stid);
-				//if error, retrieve the error using the oci_error() function & output an error message
-				if (!$res) {
-					$err = oci_error($stid); 
-					echo htmlentities($err['message']);
-				}
-
-				$results = oci_fetch_array($stid, OCI_ASSOC);
+				$results = validateUsername($username, $conn);
 				if (!empty($results)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-danger">Username: '.$username.' is already taken.</li>
@@ -499,21 +532,7 @@
 					$exitFlag = true;
 				}
 				else {
-					// Check if a valid/existing person_id was entered
-					$sql = 'SELECT * FROM persons WHERE person_id=\''.$person_id.'\'';
-					// echo $sql.'<br>';
-
-					//Prepare sql using conn and returns the statement identifier
-					$stid = oci_parse($conn, $sql);
-					//Execute a statement returned from oci_parse()
-					$res=oci_execute($stid);
-					//if error, retrieve the error using the oci_error() function & output an error message
-					if (!$res) {
-						$err = oci_error($stid); 
-						echo htmlentities($err['message']);
-					}
-
-					$results = oci_fetch_array($stid, OCI_ASSOC);
+					$results = validatePersonID($person_id, $conn);
 					if (empty($results)) {
 						echo '<ul class="list-group">
 								<li class="list-group-item list-group-item-danger">PersonID: '.(int)$person_id.' is not in the database. Invalid.</li>
@@ -549,64 +568,6 @@
 		}
 
 
-		// REMOVE USER
-		if(isset($_POST['removeUserBtn'])){
-			$username = $_POST['username'];
-
-			if (empty($username)) {
-				echo '<ul class="list-group">
-						<li class="list-group-item list-group-item-info">Username cannot be blank. A username must be selected.</li>
-					  </ul>';
-			}
-			else {
-
-				// Check if username is in the database
-				$sql = 'SELECT * FROM users WHERE user_name =\''.$username.'\'';
-				// echo  $sql.'<br>';
-
-				//Prepare sql using conn and returns the statement identifier
-				$stid = oci_parse($conn, $sql);
-				//Execute a statement returned from oci_parse()
-				$res=oci_execute($stid);
-				//if error, retrieve the error using the oci_error() function & output an error message
-				if (!$res) {
-					$err = oci_error($stid); 
-					echo htmlentities($err['message']);
-				}
-
-				$results = oci_fetch_array($stid, OCI_ASSOC);
-				if (empty($results)) {
-					echo '<ul class="list-group">
-							<li class="list-group-item list-group-item-danger">Username does not exist in the database.</li>
-						  </ul>';
-				}
-				else {
-					// delete user
-					$sql = 'DELETE FROM users WHERE ( user_name =\''.$username.'\')';
-					// echo $sql.'<br>';
-
-					//Prepare sql using conn and returns the statement identifier
-					$stid = oci_parse($conn, $sql);
-					//Execute a statement returned from oci_parse()
-					$res=oci_execute($stid);
-					//if error, retrieve the error using the oci_error() function & output an error message
-					if (!$res) {
-						$err = oci_error($stid); 
-						echo htmlentities($err['message']);
-					}
-					else{
-						echo '<ul class="list-group">
-								<li class="list-group-item list-group-item-success">User: '.$username.' deleted! <br>
-								</li>
-							  </ul>';
-					}
-				}
-				// Free the statement identifier when closing the connection
-				oci_free_statement($stid);
-			}
-		}
-
-
 		// UPDATE USER
 		if(isset($_POST['updateUserBtn'])){        	
 			$username = $_POST['username'];
@@ -620,20 +581,7 @@
 			}
 			else {
 				// Check if username is in the database
-				$sql = 'SELECT * FROM users WHERE user_name =\''.$username.'\'';
-				// echo $sql.'<br>';
-
-				//Prepare sql using conn and returns the statement identifier
-				$stid = oci_parse($conn, $sql);
-				//Execute a statement returned from oci_parse()
-				$res=oci_execute($stid);
-				//if error, retrieve the error using the oci_error() function & output an error message
-				if (!$res) {
-					$err = oci_error($stid); 
-					echo htmlentities($err['message']);
-				}
-
-				$results = oci_fetch_array($stid, OCI_ASSOC);
+				$results = validateUsername($username, $conn);
 				if (empty($results)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-danger">Username does not exist in the database.</li>
@@ -683,6 +631,31 @@
 			}
 		}
 
+
+		// REMOVE USER
+		if(isset($_POST['removeUserBtn'])){
+			$username = $_POST['username'];
+
+			if (empty($username)) {
+				echo '<ul class="list-group">
+						<li class="list-group-item list-group-item-info">Username cannot be blank. A username must be selected.</li>
+					  </ul>';
+			}
+			else {
+
+				// Check if username is in the database
+				$results = validateUsername($username, $conn);
+				if (empty($results)) {
+					echo '<ul class="list-group">
+							<li class="list-group-item list-group-item-danger">Username does not exist in the database.</li>
+						  </ul>';
+				}
+				else {
+					removeUser($username, $conn);
+				}
+			}
+		}
+
 	    function get_all_users($conn){
 	        $arr = array();
 	        $sql = 'SELECT * FROM users';
@@ -702,6 +675,8 @@
 	    }
 	   	$rows = get_all_users($conn);
 		?>
+
+		<!-- Display User table contents -->
 		<table class="table">
 			<thead>
 				<tr>
@@ -751,16 +726,6 @@
 
 		<br><br>
 
-		<legend>Remove User Account</legend>	
-		<form name="removeUser" method="post" action="userModule.php#users">
-			<label for="username">Username</label>
-			<input type='text' name='username' class="form-control" placeholder="Username"><br>
-			
-			<button type='submit' class='btn btn-default' name='removeUserBtn'>Remove</button>
-		</form>
-
-		<br><br>
-
 		<legend>Update User Account</legend>	
 		<form name="updateUser" method="post" action="userModule.php#users">
 			<label for="username">Username</label>
@@ -783,8 +748,19 @@
 			<button type='submit' class='btn btn-default' name='updateUserBtn'>Update User</button>
 		</form>
 
+		<br><br>
+
+		<legend>Remove User Account</legend>	
+		<form name="removeUser" method="post" action="userModule.php#users">
+			<label for="username">Username</label>
+			<input type='text' name='username' class="form-control" placeholder="Username"><br>
+			
+			<button type='submit' class='btn btn-default' name='removeUserBtn'>Remove</button>
+		</form>
 	</div>
 
 	<?php } ?>
+
+	<?php oci_close($conn); ?>
     </body>
 </html>
