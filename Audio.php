@@ -30,7 +30,7 @@
 			$target = $target . basename($fileName);
 
 			// Allow certain file formats
-			echo $fileType;
+			
 			if($fileType != "audio/x-wav" && $fileType != 'audio/wav') {
 			    echo "Only wav allowed.";
 				?>
@@ -92,7 +92,7 @@
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
-			$date = date('d-m-Y h:m:s',time());;
+			$date = $_POST['createdate'];
 			
 			$lob = oci_new_descriptor($conn, OCI_D_LOB);
 			$stmt = oci_parse($conn, "INSERT INTO audio_recordings(recording_id, sensor_id, date_created, length, description, recorded_data) VALUES ('$recording_id', '$sensor_id', to_date('$date', 'dd-mm-YYYY hh24:mi:ss'), '$length', '$description', empty_blob()) returning recorded_data into :recorded_data");
@@ -102,7 +102,7 @@
 
 			if ($lob->savefile($tmpName)) {
 				oci_commit($conn);
-				echo "successful audio upload";
+				echo "Upload Sucessful";
 				$lob->free();
 				oci_free_statement($stmt);
 				oci_close($conn);
@@ -112,7 +112,7 @@
 				</a>
 				<?php
 			} else {
-				echo "failed audio upload";
+				echo "Upload Failed";
 				$lob->free();
 				oci_free_statement($stmt);
 				oci_close($conn);

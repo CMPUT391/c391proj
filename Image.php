@@ -116,7 +116,7 @@
 			oci_free_statement($stid);
 
 			// now add the new data to the images table
-			$date = date('d-m-Y h:m:s',time());;
+			$date = $_POST['createdate'];
 
 			$lob = oci_new_descriptor($conn, OCI_D_LOB);
 			$thumblob = oci_new_descriptor($conn, OCI_D_LOB);
@@ -150,7 +150,7 @@
 	
 			if ($lob->savefile($tmpName) and $thumblob->save($sBinaryThumbnail)) {
 				oci_commit($conn);
-				echo "successful thumbnail and recorded data upload";
+				echo "Upload Sucessful";
 				$lob->free();
 				oci_free_statement($stmt);
 				oci_close($conn);
@@ -160,7 +160,7 @@
 				</a>
 				<?php
 			} else {
-				echo "failed thumbnail and recorded data upload";
+				echo "Upload Failed";
 				$lob->free();
 				oci_free_statement($stmt);
 				oci_close($conn);
