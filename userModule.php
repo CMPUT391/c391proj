@@ -283,8 +283,7 @@
 				$continueFlag = false;
 				$noQueryExecutedFlag = true;
 			}
-
-			if($continueFlag) {
+			else {
 				// Check if existing personid is entered
 				$results = validatePersonID($personID, $conn);
 				if (empty($results)) {
@@ -293,8 +292,22 @@
 						  </ul><br>';
 					$continueFlag = false;
 				}
+			}
 
-				else if (empty($first_name) && empty($last_name) && empty($address) && empty($email) && empty($phone_number)) {
+			if($continueFlag) {
+				if (!empty($email)) {
+					$results = validateEmail($email, $conn);
+					if (!empty($results)) {
+						echo '<ul class="list-group">
+								<li class="list-group-item list-group-item-danger">The email: '.$email.' already exists in the database. Please enter a different email.</li>
+						  	  </ul><br>';
+						$continueFlag = false;
+					}
+				}		
+			}
+
+			if($continueFlag) {
+				if (empty($first_name) && empty($last_name) && empty($address) && empty($email) && empty($phone_number)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-info">Nothing to update!</li>
 						  </ul>';
@@ -540,7 +553,7 @@
 						$exitFlag = true;
 					}
 					else {
-						$sql = 'INSERT INTO users VALUES (\''.$username.'\', \''.$password.'\', \''.$role.'\', '.(int)$person_id.', to_date(\''.$date_registered.'\', \'dd-mm-yyyy hh24:mi:ss\'))';
+						$sql = 'INSERT INTO users VALUES (\''.$username.'\', \''.$password.'\', \''.$role.'\', '.(int)$person_id.', to_date(\''.$date_registered.'\', \'dd/mm/YYYY hh24:mi:ss\'))';
 						// echo $sql.'<br>';
 						//Prepare sql using conn and returns the statement identifier
 						$stid = oci_parse($conn, $sql);
@@ -558,11 +571,10 @@
 									</li>
 								  </ul>';
 						}
+						// Free the statement identifier when closing the connection
+						oci_free_statement($stid);
 					}
 				}
-
-				// Free the statement identifier when closing the connection
-				oci_free_statement($stid);
 			}
 
 		}
@@ -624,10 +636,10 @@
 									<li class="list-group-item list-group-item-success">User updated! <br>'.$updateStatus.'</li>
 								  </ul>';
 						}
+						// Free the statement identifier when closing the connection
+						oci_free_statement($stid);
 					}
 				}
-				// Free the statement identifier when closing the connection
-				oci_free_statement($stid);
 			}
 		}
 
@@ -658,7 +670,7 @@
 
 	    function get_all_users($conn){
 	        $arr = array();
-	        $sql = 'SELECT * FROM users';
+	        $sql = 'SELECT user_name, password, role, person_id, to_char(date_registered, \'dd/mm/YYYY hh24:mi:ss\') as date_registered FROM users';
 	        $stid = oci_parse($conn,$sql);
 	        $res = oci_execute($stid);
 	        

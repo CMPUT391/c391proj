@@ -45,15 +45,14 @@
 			
 			// images
 			$subscribedSensorsImages = 'i.sensor_id = s.sensor_id';
-			$imageDateRange = 'to_date(i.date_created, \'dd-mm-YYYY hh24:mi:ss\') >= to_date(to_date(\''.$startDate.'\', \'YYYY-mm-dd\'), \'dd-mm-YYYY hh24:mi:ss\')  AND to_date(i.date_created, \'dd-mm-YYYY hh24:mi:ss\') <= to_date(to_date(\''.$endDate.'\', \'YYYY-mm-dd\'), \'dd-mm-YYYY hh24:mi:ss\')';
+			$imageDateRange = 'i.date_created >= to_date(\''.$startDate.'\', \'dd/mm/YYYY hh24:mi:ss\')  AND i.date_created <= to_date(\''.$endDate.'\', \'dd/mm/YYYY hh24:mi:ss\')';
 			
 			// sensors
 			$sensorTypeSearch = 's.sensor_type = \''.$sensorType.'\'';
 			$sensorLocationSearch = 's.location = \''.$sensorLocation.'\'';
 
 			// Formulate sql query based on user's search paramaters
-			// ---------- ********************* NEED TO DO "DISTINCT" after blobs are figured out *********** -------------- //
-			$sql = 'SELECT i.* FROM images i, sensors s, subscriptions t WHERE '.$userSubscribedSensors.' AND '.$subscribedSensorsImages;
+			$sql = 'SELECT i.image_id, i.sensor_id, to_char(i.date_created, \'dd/mm/YYYY hh24:mi:ss\') as date_created, i.description, i.thumbnail, i.recoreded_data FROM images i, sensors s, subscriptions t WHERE '.$userSubscribedSensors.' AND '.$subscribedSensorsImages;
 
 			if (!empty($sensorType))
 				$sql = $sql." AND ".$sensorTypeSearch;
@@ -168,8 +167,8 @@
 
 			/* -------- AUDIO RECORDINGS --------- */
 			$subscribedSensorsAudio = 'a.sensor_id = s.sensor_id';
-			$audioDateRange = 'to_date(a.date_created, \'dd-mm-YYYY hh24:mi:ss\') >= to_date(to_date(\''.$startDate.'\', \'YYYY-mm-dd\'), \'dd-mm-YYYY hh24:mi:ss\')  AND to_date(a.date_created, \'dd-mm-YYYY hh24:mi:ss\') <= to_date(to_date(\''.$endDate.'\', \'YYYY-mm-dd\'), \'dd-mm-YYYY hh24:mi:ss\')';
-			$sql = 'SELECT a.* FROM audio_recordings a, sensors s, subscriptions t WHERE '.$userSubscribedSensors.' AND '.$subscribedSensorsAudio;
+			$audioDateRange = 'a.date_created >= to_date(\''.$startDate.'\', \'dd/mm/YYYY hh24:mi:ss\')  AND a.date_created <= to_date(\''.$endDate.'\', \'dd/mm/YYYY hh24:mi:ss\')';
+			$sql = 'SELECT a.recording_id, a.sensor_id, to_char(a.date_created, \'dd/mm/YYYY hh24:mi:ss\') as date_created, a.length, a.description, a.recorded_data FROM audio_recordings a, sensors s, subscriptions t WHERE '.$userSubscribedSensors.' AND '.$subscribedSensorsAudio;
 
 			if (!empty($sensorType)) {
 				$sql = $sql.' AND '.$sensorTypeSearch;
@@ -269,7 +268,7 @@
 
 			// /* ------ SCALAR DATA ----- */
 			$subscribedSensorsScalar = 'c.sensor_id = s.sensor_id';
-			$scalarDateRange = 'to_date(c.date_created, \'dd-mm-YYYY hh24:mi:ss\')  >= to_date(to_date(\''.$startDate.'\', \'YYYY-mm-dd\'), \'dd-mm-YYYY hh24:mi:ss\')  AND to_date(c.date_created, \'dd-mm-YYYY hh24:mi:ss\')  <= to_date(to_date(\''.$endDate.'\', \'YYYY-mm-dd\'), \'dd-mm-YYYY hh24:mi:ss\')';
+			$scalarDateRange = 'c.date_created >= to_date(\''.$startDate.'\', \'dd/mm/YYYY hh24:mi:ss\')  AND c.date_created <= to_date(\''.$endDate.'\', \'dd/mm/YYYY hh24:mi:ss\')';
 
 			// Formulate sql query based on user's search paramaters
 			$sql = 'SELECT c.id, c.sensor_id, to_char(c.date_created, \'dd/mm/YYYY hh24:mi:ss\') as date_created, c.value FROM scalar_data c, sensors s, subscriptions t WHERE '.$userSubscribedSensors.' AND '.$subscribedSensorsScalar;

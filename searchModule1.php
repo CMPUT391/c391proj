@@ -52,11 +52,11 @@
 		<br>
 		<div class="form-group has-warning">
 		  <label class="control-label" for="startDate">Start Date</label>
-		  <input type="date" class="form-control" id="startDate" name="startDate">
+		  <input type="text" class="form-control" id="startDate" name="startDate" placeholder='dd/mm/yyyy hh24:mi:ss'>
 		</div>
 		<div class="form-group has-warning">
 		  <label class="control-label" for="endDate">End Date</label>
-		  <input type="date" class="form-control" name="endDate" id='endDate'>
+		  <input type="text" class="form-control" name="endDate" id='endDate' placeholder='dd/mm/yyyy hh24:mi:ss'>
 		</div>
 	  <button type="submit" class="btn btn-primary" id='searchBtn' name="searchBtn">Submit</button>
 

@@ -136,20 +136,25 @@
 		// REMOVE SENSORS
 		if(isset($_POST['removeSensorBtn'])){
 			$sensorID = $_POST['sensor_id'];
-
-			// Check if sensorID is in the database
-			$results = validateSensor($sensorID, $conn);
-			if (empty($results)) {
+			if (empty($sensorID)) {
 				echo '<ul class="list-group">
-					 	<li class="list-group-item list-group-item-danger">SensorID : '.$sensorID.' does not exist in the database. </li>
-					 </ul>';
+					 	<li class="list-group-item list-group-item-danger">No sensor id was entered.</li>
+					 </ul>';	
 			} 
-
 			else {
-				removeSubscriptionsFromSensorID($sensorID, $conn);
-				removeSensor($sensorID, $conn);
-			}
+				// Check if sensorID is in the database
+				$results = validateSensor($sensorID, $conn);
+				if (empty($results)) {
+					echo '<ul class="list-group">
+						 	<li class="list-group-item list-group-item-danger">SensorID : '.$sensorID.' does not exist in the database. </li>
+						 </ul>';
+				} 
 
+				else {
+					removeSubscriptionsFromSensorID($sensorID, $conn);
+					removeSensor($sensorID, $conn);
+				}
+			}
 		}
 
 	    function get_all_sensors($conn){
