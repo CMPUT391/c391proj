@@ -31,7 +31,7 @@
 			<button>Go to User module</button>
 		</a>
 		
-		<a href ='help_markdown.php'>
+		<a href ='help.php'>
 			<button>Help Documentation</button>
 		</a> 
 
@@ -60,7 +60,7 @@
 			<button>Go to Data Analysis module</button>
 		</a>
 
-		<a href ='help_markdown.php'>
+		<a href ='help.php'>
 			<button>Help Documentation</button>
 		</a> 
 
@@ -80,7 +80,7 @@
 			<button>Go to upload module</button>
 		</a>
 
-		<a href ='help_markdown.php'>
+		<a href ='help.php'>
 			<button>Help Documentation</button>
 		</a> 
 
