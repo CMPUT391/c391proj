@@ -1,4 +1,5 @@
 <!-- Reference: http://www.iandevlin.com/blog/2012/09/html5/html5-media-and-data-uri -->
+<!-- Reference: http://stackoverflow.com/questions/8103486/display-filesimage-after-form-submit -->
 <html>
 	<head> 
 		<title> Search Results </title>
@@ -28,6 +29,7 @@
 			$startDate = $_POST['startDate'];
 			$endDate = $_POST['endDate'];
 
+			// ensure start & end date time period is specified, if not display message & return
 			if (empty($startDate) OR empty($endDate)) {
 				echo 'Time period must be specified!';
 				exit;
@@ -44,7 +46,9 @@
 			$userSubscribedSensors = 't.person_id = '.$personID.' AND s.sensor_id = t.sensor_id';
 			
 			// images
+			// join images & sensors tables on sensor_id
 			$subscribedSensorsImages = 'i.sensor_id = s.sensor_id';
+			// query images for date range
 			$imageDateRange = 'i.date_created >= to_date(\''.$startDate.'\', \'dd/mm/YYYY hh24:mi:ss\')  AND i.date_created <= to_date(\''.$endDate.'\', \'dd/mm/YYYY hh24:mi:ss\')';
 			
 			// sensors
@@ -54,6 +58,7 @@
 			// Formulate sql query based on user's search paramaters
 			$sql = 'SELECT i.image_id, i.sensor_id, to_char(i.date_created, \'dd/mm/YYYY hh24:mi:ss\') as date_created, i.description, i.thumbnail, i.recoreded_data FROM images i, sensors s, subscriptions t WHERE '.$userSubscribedSensors.' AND '.$subscribedSensorsImages;
 
+			// concatenate & formulate the sql query for non-empty fields
 			if (!empty($sensorType))
 				$sql = $sql." AND ".$sensorTypeSearch;
 
@@ -61,6 +66,7 @@
 				$sql = $sql." AND ".$sensorLocationSearch;
 
 			if (!empty($keywords)) {
+				// extract comma separated keywords
 				$keywordsArray = array();
 				$keywordsArrayTemp = explode(',', $keywords);
 
@@ -72,6 +78,7 @@
 				}
 				$count = count($keywordsArray);
 
+				// formulate & concatentate query for keywords (querying on sensor description & image description)
 				if ($count > 0) {
 					$sql = $sql." AND (";
 					$sql = $sql.' lower(i.description) LIKE \'%'.$keywordsArray[0].'%\'';
@@ -89,6 +96,7 @@
 				}
 			}
 
+			// concatenate date range query
 			$sql = $sql." AND ".$imageDateRange;
 			
 
@@ -166,10 +174,13 @@
 
 
 			/* -------- AUDIO RECORDINGS --------- */
+			// join audio recordings & sensors tables on sensor_id
 			$subscribedSensorsAudio = 'a.sensor_id = s.sensor_id';
+			// query on date range
 			$audioDateRange = 'a.date_created >= to_date(\''.$startDate.'\', \'dd/mm/YYYY hh24:mi:ss\')  AND a.date_created <= to_date(\''.$endDate.'\', \'dd/mm/YYYY hh24:mi:ss\')';
 			$sql = 'SELECT a.recording_id, a.sensor_id, to_char(a.date_created, \'dd/mm/YYYY hh24:mi:ss\') as date_created, a.length, a.description, a.recorded_data FROM audio_recordings a, sensors s, subscriptions t WHERE '.$userSubscribedSensors.' AND '.$subscribedSensorsAudio;
 
+			// concatenate & forumate query for non-empty fields
 			if (!empty($sensorType)) {
 				$sql = $sql.' AND '.$sensorTypeSearch;
 			}
@@ -179,6 +190,7 @@
 
 
 			if (!empty($keywords)) {
+				// extract comma separated keywords
 				$keywordsArray = array();
 				$keywordsArrayTemp = explode(',', $keywords);
 
@@ -190,6 +202,7 @@
 				}
 				$count = count($keywordsArray);
 
+				// query on audio recordings description & sensor description
 				if ($count > 0) {
 					$sql = $sql." AND (";
 					$sql = $sql.' lower(a.description) LIKE \'%'.$keywordsArray[0].'%\'';
@@ -207,7 +220,7 @@
 				}
 			}
 
-
+			// concatenate date range query
 			$sql = $sql." AND ".$audioDateRange;
 
 			// Get all AUDIO RECORDINGS satisfying the search query
@@ -225,6 +238,7 @@
 			// Display all audio recording results
 			while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
 				$i = $i + 1;
+				// prepare audio recording for download
 				$audio = "data:audio/wav" . ";base64," . base64_encode($row['RECORDED_DATA']->load());
 
 				// audio icon from http://researchradio.org/wp-content/uploads/2015/06/audio-icon.png
@@ -267,12 +281,15 @@
 
 
 			// /* ------ SCALAR DATA ----- */
+			// join scalar data & sensors tables on sensor_id
 			$subscribedSensorsScalar = 'c.sensor_id = s.sensor_id';
+			// query on date range
 			$scalarDateRange = 'c.date_created >= to_date(\''.$startDate.'\', \'dd/mm/YYYY hh24:mi:ss\')  AND c.date_created <= to_date(\''.$endDate.'\', \'dd/mm/YYYY hh24:mi:ss\')';
 
 			// Formulate sql query based on user's search paramaters
 			$sql = 'SELECT c.id, c.sensor_id, to_char(c.date_created, \'dd/mm/YYYY hh24:mi:ss\') as date_created, c.value FROM scalar_data c, sensors s, subscriptions t WHERE '.$userSubscribedSensors.' AND '.$subscribedSensorsScalar;
 			
+			// concatenate & forumate query for non-empty fields
 			if (!empty($sensorType))
 				$sql = $sql." AND ".$sensorTypeSearch;
 
@@ -326,6 +343,8 @@
 			// Display all scalar data results
 			while ($row = oci_fetch_array($stid, OCI_ASSOC)) {
 				$i = $i + 1;
+
+				// prepare record for csv download
 				$csvString = $row["SENSOR_ID"].','.$row["DATE_CREATED"].','.$row["VALUE"];
 				$scalarCSV = 'data:text/csv;base64,'.base64_encode($csvString);
 

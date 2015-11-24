@@ -13,8 +13,6 @@
 		session_start();
 		// $_SESSION['status'] is the data passed from Login Module which will contain the type of user 
 		// $_SESSION['personid'] is the person id of the user
-		// END SESSION WHEN LOGOUT
-		// echo $_SESSION['personid'];
 		if ($_SESSION['status'] != 'a' && $_SESSION['status'] != 'd' && $_SESSION['status'] != 's') { ?>
 			Please Log in
 			<a href = 'LoginModule.html'>
@@ -22,6 +20,8 @@
 			</a>
 	<?php 
 		exit; }
+
+		// ensure only admins have access to this page
 		else if ($_SESSION['status'] != 'a') {
 			echo '<ul class="list-group">
 					<li class="list-group-item list-group-item-danger">Access Denied. This page is only accessible by admins.</li>
@@ -104,6 +104,48 @@
 			oci_free_statement($stid);
 		}
 
+		// remove all images, audio recordings & scalar data entries that correspond to the sensor id
+		function removeData($sensor_id, $conn) {
+			// delete all images associated with the sensor id
+			$sql = 'DELETE FROM images WHERE sensor_id = '.(int)$sensor_id;
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			// delete all audio recordings with that sensor id
+			$sql = 'DELETE FROM audio_recordings WHERE sensor_id = '.(int)$sensor_id;
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}
+
+			// delete all scalar data associated with the sensor id
+			$sql = 'DELETE FROM scalar_data WHERE sensor_id = '.(int)$sensor_id;
+			//Prepare sql using conn and returns the statement identifier
+			$stid = oci_parse($conn, $sql);
+			//Execute a statement returned from oci_parse()
+			$res=oci_execute($stid);
+			//if error, retrieve the error using the oci_error() function & output an error message
+			if (!$res) {
+				$err = oci_error($stid); 
+				echo htmlentities($err['message']);
+			}		
+				
+			// Free the statement identifier when closing the connection
+			oci_free_statement($stid);
+		}
+
 		// CREATE / ADD SENSOR
 		if(isset($_POST['createSensorBtn'])){        	
 			$location=$_POST['sensor_location'];            		
@@ -122,6 +164,7 @@
 				echo htmlentities($err['message']);
 			}
 			else{
+				// display success message
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-success"> <strong> Sensor Inserted! </strong><br>
 						Sensor Location: '.$location.'.<br/> Sensor Type: '.$type.'.<br/>Sensor Description: '.$description.'<br> </li>
@@ -136,6 +179,8 @@
 		// REMOVE SENSORS
 		if(isset($_POST['removeSensorBtn'])){
 			$sensorID = $_POST['sensor_id'];
+
+			// check if sensor id is entered, if not display message & return
 			if (empty($sensorID)) {
 				echo '<ul class="list-group">
 					 	<li class="list-group-item list-group-item-danger">No sensor id was entered.</li>
@@ -144,19 +189,23 @@
 			else {
 				// Check if sensorID is in the database
 				$results = validateSensor($sensorID, $conn);
+				// if sensor id does not exists in database, display message & return
 				if (empty($results)) {
 					echo '<ul class="list-group">
 						 	<li class="list-group-item list-group-item-danger">SensorID : '.$sensorID.' does not exist in the database. </li>
 						 </ul>';
 				} 
 
+				// else remove subscriptions asssocated with the sensor id, then remove any images, audio recordings or scalar data with that sensor id then remove the sensor
 				else {
 					removeSubscriptionsFromSensorID($sensorID, $conn);
+					removeData($sensorID, $conn);
 					removeSensor($sensorID, $conn);
 				}
 			}
 		}
 
+		// retrieve contents of sensors table to display
 	    function get_all_sensors($conn){
 	        $arr = array();
 	        $sql = 'SELECT * FROM sensors s';

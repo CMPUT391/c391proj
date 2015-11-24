@@ -126,6 +126,7 @@
 			
 		}
 
+		// removes user from the database given a username
 		function removeUser($username, $conn) {
 			$sql = 'DELETE FROM users WHERE ( user_name =\''.$username.'\')';
 			// echo $sql.'<br>';
@@ -148,6 +149,7 @@
 			oci_free_statement($stid);
 		}
 
+		// removes all users associated to a person id
 		function removeUserFromPersonID($personID, $conn) {
 			// check if person has any user accounts associated with it
 			$sql = 'SELECT * FROM users WHERE person_id='.$personID.'';
@@ -181,6 +183,7 @@
 			oci_free_statement($stid);
 		}
 
+		// removes a person from the database
 		function removePerson($personID, $conn) {
 			$sql = 'DELETE FROM persons WHERE ( person_id = '.(int)$personID.')';
 			// echo $sql.'<br>';
@@ -232,13 +235,16 @@
 			$email = $_POST['email'];
 			$phone_number = $_POST['phone_number'];
 
-			
+			// check if the email entered  already exists in the database
 			$results = validateEmail($email, $conn);
+			// if email already exists, display message & return
 			if (!empty($results)) {
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-danger">The email: '.$email.' already exists in the database.</li>
 					  </ul><br>';
 			}
+
+			// else if email doesn't already exists, insert person into the database
 			else {
 				$sql = 'INSERT INTO persons VALUES (person_id.nextval, \''.$first_name.'\', \''.$last_name.'\', \''.$address.'\', \''.$email.'\', \''.$phone_number.'\')';
 				// echo $sql.'<br>';
@@ -252,14 +258,15 @@
 					echo htmlentities($err['message']);
 				}
 				else{
+					// display success message
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-success">Person added! <br>
 							First Name: '.$first_name.'<br>Last Name: '.$last_name.'<br>Address: '.$address.'<br>Email: '.$email.'<br>Phone Number: '.$phone_number.'</li>
 						 </ul>';
 				}
+				// Free the statement identifier when closing the connection
+				oci_free_statement($stid);
 			}
-			// Free the statement identifier when closing the connection
-			oci_free_statement($stid);
 
 		}
 
@@ -275,7 +282,8 @@
 
 			$continueFlag = true;
 			$noQueryExecutedFlag = false;
-			// echo "Person ID: ".$personID.'<br>';
+			
+			// if no person id is entered, display a message & return
 			if (empty($personID)) {
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-danger">PersonID must be entered to update a person!</li>
@@ -284,8 +292,9 @@
 				$noQueryExecutedFlag = true;
 			}
 			else {
-				// Check if existing personid is entered
+				// Check if person id entered exists
 				$results = validatePersonID($personID, $conn);
+				// if person id doesn't exists, display message & return
 				if (empty($results)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-danger">PersonID: '.$personID.' does not exist in the database.</li>
@@ -296,7 +305,10 @@
 
 			if($continueFlag) {
 				if (!empty($email)) {
+					// check if email entered exists in database already
 					$results = validateEmail($email, $conn);
+
+					// if email already exists, display message & return
 					if (!empty($results)) {
 						echo '<ul class="list-group">
 								<li class="list-group-item list-group-item-danger">The email: '.$email.' already exists in the database. Please enter a different email.</li>
@@ -307,6 +319,7 @@
 			}
 
 			if($continueFlag) {
+				// if all fields are empty, display a message & return
 				if (empty($first_name) && empty($last_name) && empty($address) && empty($email) && empty($phone_number)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-info">Nothing to update!</li>
@@ -319,6 +332,7 @@
 
 
 			if ($continueFlag) {
+				// concatenate queries for all non-empty field 
 				$sql = 'UPDATE persons SET ';
 				if (!empty($first_name)) {
 					$sql = $sql.'first_name =\''.$first_name.'\', ';
@@ -370,7 +384,7 @@
 			$personID = $_POST['person_id'];
 
 			$continueFlag = true;
-			// echo "Person ID: ".$personID.'<br>';
+			// check if person id is entered, if not display a message & return
 			if (empty($personID)) {
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-info">No PersonID was entered!</li>
@@ -378,8 +392,10 @@
 				$continueFlag = false;
 			}
 			else {
-				// Check if existing person id is entered
+				// Check if person id entered exists
 				$results = validatePersonID($personID, $conn);
+
+				// if person id entered doesn't exists, display message & return
 				if (empty($results)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-danger">PersonID : '.(int)$personID.' does not exist in the database.</li>
@@ -387,6 +403,7 @@
 					$continueFlag = false;
 				}
 
+				// else remove all subscriptions associated with the person id, remove all users associated with the person id then remove the person
 				if ($continueFlag) {
 					removeSubscriptions($personID, $conn);
 					removeUserFromPersonID($personID, $conn);
@@ -395,6 +412,7 @@
 			}
 		}
 
+		// retrieve contents of persons table to display
 	    function get_all_persons($conn){
 	        $arr = array();
 	        $sql = 'SELECT * FROM persons';
@@ -515,8 +533,8 @@
 			$date_registered = date('d-m-Y H:i:s',time());
 
 			$continueFlag = true;
-			$exitFlag = false;
 
+			// check if fields are empty & if so, display a message & return
 			if (empty($username)) {
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-info">Username cannot be blank. A username must be selected.</li>
@@ -536,22 +554,29 @@
 				$continueFlag = false;
 			}
 
+			// if the fields are not empty, continue here
 			if ($continueFlag) {
+				// check if username entered already exists in the database
 				$results = validateUsername($username, $conn);
+
+				// if username already exists, display message & return
 				if (!empty($results)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-danger">Username: '.$username.' is already taken.</li>
 						  </ul>';
-					$exitFlag = true;
 				}
+
+				// else username entered is valid
 				else {
+					// check if the person id entered exists
 					$results = validatePersonID($person_id, $conn);
+					// if person id entered doesn't exist, display message & return
 					if (empty($results)) {
 						echo '<ul class="list-group">
 								<li class="list-group-item list-group-item-danger">PersonID: '.(int)$person_id.' is not in the database. Invalid.</li>
 							  </ul>';
-						$exitFlag = true;
 					}
+					// else insert the user
 					else {
 						$sql = 'INSERT INTO users VALUES (\''.$username.'\', \''.$password.'\', \''.$role.'\', '.(int)$person_id.', to_date(\''.$date_registered.'\', \'dd/mm/YYYY hh24:mi:ss\'))';
 						// echo $sql.'<br>';
@@ -565,6 +590,7 @@
 							echo htmlentities($err['message']);
 						}
 						else {
+							// display success message
 							echo '<ul class="list-group">
 									<li class="list-group-item list-group-item-success">User added! <br>
 									Username: '.$username.'<br/>Password: '.$password.'<br/>Role: '.$role.'<br/>PersonID: '.$person_id.'<br/>
@@ -586,6 +612,7 @@
 			$password = $_POST['password'];
 			$role = $_POST['role'];
 
+			// check if username is entered, if not display message & return
 			if (empty($username)) {
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-info">Username cannot be blank. A username must be selected.</li>
@@ -600,13 +627,14 @@
 						  </ul>';
 				}
 				else {
+					// if password & role are empty, display message & return
 					if ((empty($password)) && (empty($role))) {
 						echo '<ul class="list-group">
 								<li class="list-group-item list-group-item-info">Nothing to update!</li>
 							  </ul>';
 					}
 					else {
-
+						// else formulate sql query using on the non-empty fields
 						if ((!empty($password)) && (!empty($role))) {
 							$sql = 'UPDATE users SET password =\''.$password.'\', role=\''.$role.'\' WHERE user_name=\''.$username.'\'';
 							$updateStatus = $updateStatus.' Username :'.$username.'<br>Password: '.$password.'<br>Role: '.$role.'<br>';
@@ -632,6 +660,7 @@
 							$err = oci_error($stid); 
 							echo htmlentities($err['message']);
 						} else {
+							// display success message
 							echo '<ul class="list-group">
 									<li class="list-group-item list-group-item-success">User updated! <br>'.$updateStatus.'</li>
 								  </ul>';
@@ -648,6 +677,7 @@
 		if(isset($_POST['removeUserBtn'])){
 			$username = $_POST['username'];
 
+			// check if username is entered, if not display message & return
 			if (empty($username)) {
 				echo '<ul class="list-group">
 						<li class="list-group-item list-group-item-info">Username cannot be blank. A username must be selected.</li>
@@ -657,17 +687,20 @@
 
 				// Check if username is in the database
 				$results = validateUsername($username, $conn);
+				// if username doesn't exist in the database, display message & return
 				if (empty($results)) {
 					echo '<ul class="list-group">
 							<li class="list-group-item list-group-item-danger">Username does not exist in the database.</li>
 						  </ul>';
 				}
 				else {
+					// if username exists, remove it
 					removeUser($username, $conn);
 				}
 			}
 		}
 
+		// retrive contents of users table to display
 	    function get_all_users($conn){
 	        $arr = array();
 	        $sql = 'SELECT user_name, password, role, person_id, to_char(date_registered, \'dd/mm/YYYY hh24:mi:ss\') as date_registered FROM users';
@@ -753,9 +786,6 @@
 					<option value="d">Data Curator (d) </option>
 					<option value="s">Scientist (s) </option>
 				</select> <br>
-
-		<!-- 	<label for="person_id">PersonID</label>
-			<input type='text' name='person_id' class="form-control" placeholder="PersonID"><br> -->
 			
 			<button type='submit' class='btn btn-default' name='updateUserBtn'>Update User</button>
 		</form>
