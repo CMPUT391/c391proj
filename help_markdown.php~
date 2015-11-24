@@ -29,10 +29,8 @@ $markdown = <<<content
 ---
 
 1. Download and unzip all the required files. (e.g. from project github page)
-2. Fill in the file "PHPconnectionDB.php" with the appropriate values where 'username' and 'password' 
-	are filled in with your Oracle username & password respectively.
-3. Run the setup.sql on sqlplus by typing "@setup.sql"
-4. Run the mySetup.sql on sqlplus by typing "@mySetup.sql"
+2. Run the setup.sql on sqlplus by typing "@setup.sql"
+3. Someone finish this....?
 
 [Go Back](#table_of_contents)
 
@@ -75,7 +73,7 @@ While signed in as an administrator, you can view the table of all users in the 
 To create a new user account, simply fill in all the fields under the create user account heading & press create user.
 To remove a user account, simply enter the username you want to remove & press remove.
 To update a user account, enter the username of the user you want to update then fill in any or all of the fields below it, leaving the rest blank and press update user.
-Note that you cannot change the person_id associated with a user.
+
 [Go Back](#table_of_contents)
 
 
@@ -105,7 +103,6 @@ For csv files, the user must upload a csv file of format: sensor id, date, value
 <a name="module_search"></a>
 ##### Search Module
 ---
-This module allows scientists to search for images, audio recordings & scalar data that are created within a time period (mandatory) and also by keywords, sensor type, or sensor location (all of which are optional) that correspond to sensors that they have subscribed to. It returns any records whose description or whose corresponding sensor's description contains ANY of the keywords AND satisfies the sensor type & sensor location if provided. This module displays thumbnails of the images in the results & it allows scientists to download full sized images, the audio recording as well as a csv file of scalar data.
 While signed in as a scientist, fill in the optional fields by entering keywords separated by a comma, selecting a sensor type, and/or specifying a sensor location as desired. 
 Then fill in the mandatory start & end dates to query for and click submit.
 The sensor type dropdown menu contains the 3 choices of sensor types : images, audio & scalar.

@@ -20,7 +20,7 @@
 		</a> 
 
 		<a href ='UpdateInfoPW.html'>
-			<button>Update Info & Password</button>
+			<button>Change Password</button>
 		</a> 		
 	
 		<a href="sensorModule.php">
@@ -30,10 +30,6 @@
 		<a href="userModule.php">
 			<button>Go to User module</button>
 		</a>
-		
-		<a href ='help_markdown.php'>
-			<button>Help Documentation</button>
-		</a> 
 
 
 		<?php
@@ -45,7 +41,7 @@
 		</a>
 
 		<a href ='UpdateInfoPW.html'>
-			<button>Update Info & Password</button>
+			<button>Change Password</button>
 		</a> 		
 	
 		<a href="subscribeModule.php">
@@ -60,10 +56,6 @@
 			<button>Go to Data Analysis module</button>
 		</a>
 
-		<a href ='help_markdown.php'>
-			<button>Help Documentation</button>
-		</a> 
-
 		<?php	
 		} else {
 			echo "Welcome Data Curator";
@@ -73,16 +65,12 @@
 		</a>
 	
 		<a href ='UpdateInfoPW.html'>
-			<button>Update Info & Password</button>
+			<button>Change Password</button>
 		</a> 		
 
 		<a href="UploadModule.html">
 			<button>Go to upload module</button>
 		</a>
-
-		<a href ='help_markdown.php'>
-			<button>Help Documentation</button>
-		</a> 
 
 		<?php
 		}
